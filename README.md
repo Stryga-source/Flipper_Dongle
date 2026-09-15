@@ -1,0 +1,117 @@
+# Flipper Dongle
+
+Flipper Dongle is a standalone ESP32-S3 USB adapter that turns Flipper Zero Bluetooth HID profiles into a standard USB keyboard and mouse for a PC.
+
+The PC does not need a driver, companion application, or custom Flipper application. The dongle acts as a BLE HID host on the Flipper side and as a standard USB HID device on the computer side.
+
+## Current status
+
+**First test release: v0.5.5**
+
+Working and tested:
+- Flipper Zero `Bluetooth Remote -> Keyboard`
+- keyboard input over BLE -> ESP32-S3 -> USB HID
+- mouse input over BLE -> ESP32-S3 -> USB HID
+- BadUSB / BadKB in BLE mode
+- USB keyboard press/release without stuck keys
+- USB mouse reports
+- TinyUSB synchronized HID transmission
+- support for multiple bonded BLE HID identities
+- CDC serial debug interface for development
+
+**Next test candidate: v0.5.6 — awaiting verification**
+
+v0.5.6 adds a pairing-state race-condition fix. It is not yet promoted to the first stable/test baseline until repeated hardware testing is complete.
+
+## Hardware
+
+Primary development board:
+- Waveshare ESP32-S3-LCD-1.47
+
+Development stack:
+- ESP-IDF 6.1
+- NimBLE
+- TinyUSB
+
+## Architecture
+
+```text
+Flipper Zero
+   |
+   | BLE HID
+   v
+ESP32-S3 Flipper Dongle
+   |
+   | USB HID Keyboard + Mouse
+   v
+PC
+```
+
+Flipper can keep its normal Bluetooth connection to a phone while the HID profile is used by the dongle when needed.
+
+## BLE profiles
+
+The project supports more than one Flipper HID identity.
+
+Typical examples:
+
+```text
+Control <Flipper name>   -> Bluetooth Remote
+BadUSB <Flipper name>    -> BadUSB / BadKB BLE
+```
+
+These profiles can use different BLE addresses and therefore may require separate bonds.
+
+v0.5.5 supports up to 4 stored BLE HID bonds.
+
+## Pairing controls
+
+Current design target:
+- short BOOT press: start one explicit pairing scan
+- saved bond: automatic reconnect to a trusted HID profile
+- long BOOT press: clear all stored HID bonds
+- after clearing bonds: remain idle until a new short BOOT pairing request
+
+The v0.5.6 candidate specifically improves race handling around bond reset, asynchronous disconnect, and a new pairing request.
+
+## USB modes
+
+Current development build exposes:
+- HID Keyboard
+- HID Mouse
+- CDC COM port for logs/debugging
+
+Planned final builds:
+- **Debug**: HID + CDC COM
+- **Release**: HID only, no visible COM port
+
+A later milestone will merge the working BLE HID bridge with the previously tested HID/DRIVE hardware mode switch and microSD USB MSC mode.
+
+## Build
+
+Windows PowerShell:
+
+```powershell
+$env:IDF_TOOLS_PATH="C:\Espressif\tools"
+C:\esp\v6.1\esp-idf\export.ps1
+
+idf.py set-target esp32s3
+idf.py build
+idf.py flash
+```
+
+## Version status
+
+### v0.5.5 — First Test Release
+This is the first version considered usable enough for wider hardware testing.
+
+### v0.5.6 — Test Candidate
+Pairing race-condition fix. Awaiting repeated verification before promotion.
+
+## Project scope
+
+Flipper Dongle is a standalone project. It is intentionally separate from Flipper Life / Flipper Chimera.
+
+## AI-assisted development
+
+The project is developed with the help of GPT, Codex and other AI tools. Project goals, product decisions and hardware validation come from a human; AI assists with code analysis, implementation, debugging and documentation.
