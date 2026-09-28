@@ -10,7 +10,7 @@
 - added an isolated ST7735 status display for the Pocket build; diagnostic text appeared on the actual screen and BOOT press/release confirmed GPIO0
 - built and flashed the experimental Pocket BLE bridge; Windows enumerated USB HID keyboard, mouse and CDC debug COM22; the operator confirmed keyboard and mouse input from Flipper Bluetooth Remote
 - Pocket build uses a separate generated sdkconfig with the measured 16 MB flash size; Waveshare build still compiles
-- added a Pocket-only dolphin scene with keyboard/mouse icon selected from the last queued HID report; both board builds pass, hardware display test pending
+- added a Pocket-only dolphin scene with keyboard/mouse icon selected from the last queued HID report; both board builds pass and Pocket flashed with USB HID re-enumeration; drawing confirmation pending
 
 ## v0.5.6 — Test Candidate
 - pairing/reset race-condition fix

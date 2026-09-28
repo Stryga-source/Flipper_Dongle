@@ -58,7 +58,7 @@ Progress: the separate diagnostic now renders `LCD TEST` on the actual display u
 
 The experimental Pocket bridge has since built and flashed. Windows enumerated its USB HID keyboard and mouse plus CDC COM22; the operator reports that the display progressed from waiting to connected, and both keyboard and mouse input work on the PC. Repeated pairing/reset and microSD are still to verify. The baseline Waveshare build was rebuilt successfully after the Pocket changes.
 
-UI follow-up: the user requested a dolphin holding a keyboard or mouse on the Pocket screen. A new build now draws a compact dolphin scene and selects the keyboard or mouse icon from the last successfully queued HID report. It redraws only when the report kind changes. Pocket and Waveshare builds pass; flashing and physical screen verification are pending BOOT mode on the dongle.
+UI follow-up: the user requested a dolphin holding a keyboard or mouse on the Pocket screen. A new build now draws a compact dolphin scene and selects the keyboard or mouse icon from the last successfully queued HID report. It redraws only when the report kind changes. Pocket and Waveshare builds pass. After the operator entered BOOT mode, the Pocket image was flashed with a verified write hash and the app re-enumerated as USB HID keyboard/mouse plus CDC COM22. Physical confirmation of both drawings is pending.
 
 ### Deliverables
 
