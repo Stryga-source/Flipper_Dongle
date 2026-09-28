@@ -117,38 +117,51 @@ This should be merged only after BLE HID/pairing is stable.
 
 ## New hardware target: Pocket-Dongle-S3-0.96
 
-The newly arrived non-original T-Dongle-style device has now been visually identified from the actual PCB photos as:
+The newly arrived T-Dongle-style board is now identified as `Pocket-Dongle-S3-0.96`.
 
-- PCB silkscreen: `Pocket-Dongle-S3-0.96`
-- MCU marking: **ESP32-S3**
+### Verified on the actual board with esptool v5.3.1
+
+- MCU: **ESP32-S3 QFN56 rev v0.2**
+- 240 MHz dual-core + LP core
+- Wi-Fi + Bluetooth 5 LE
+- crystal: **40 MHz**
+- embedded PSRAM: **8 MB (AP_3v3)**
+- Flash: **16 MB**
+- Flash JEDEC raw ID: manufacturer `0x20`, device `0x4018`
+- Flash bus: **quad / 4 data lines**
+- Flash voltage: **3.3 V**
+- USB mode reported by ESP32-S3: **USB-Serial/JTAG**
+- enumerates on Windows as **COM23** through the ESP32-S3 native USB path
+
+This is especially important because the matching public Pocket-Dongle-S3 reference documents an 8 MB Flash revision. Our actual board is therefore a different memory revision and must use its measured 16 MB configuration.
+
+### Present on the PCB
+
 - integrated USB Type-A male plug
 - integrated 0.96-inch display
-- microSD socket on the back
+- microSD socket
 - one tactile button near USB
 - exposed edge GPIO/test pads
 
-This is **not** to be treated as an original LILYGO T-Dongle-S3.
+### Still not hardware-verified
 
-A matching public Pocket-Dongle-S3 project was found with schematics/examples and candidate pin assignments. Those values are documented in `docs/hardware/T_DONGLE_CLONE.md` as **REFERENCE**, not yet verified on our exact PCB.
-
-Important unknowns that still require measurement/test:
-
-- actual flash size
-- PSRAM presence/size
-- native USB routing confirmation
 - tactile button GPIO
-- exact display wiring/controller confirmation on this revision
-- exact microSD wiring on this revision
+- exact display controller/wiring on this revision
+- exact microSD wiring/mode on this revision
+- TinyUSB HID enumeration over the Type-A connector
 
-**Do not overwrite factory firmware before recording USB enumeration, reading flash ID and backing up the original flash image.**
+A matching public Pocket-Dongle-S3 project with schematics/examples and candidate display/SD pins is documented in `docs/hardware/T_DONGLE_CLONE.md`. Treat those pins as **REFERENCE** until tested on this exact board.
+
+**Do not erase or overwrite factory firmware until a complete 16 MB backup has been made and verified by SHA256.**
 
 ## Near-term order
 
-1. Connect the Pocket-Dongle-S3-0.96 and perform non-destructive identification / factory backup.
-2. Verify actual flash/PSRAM and USB behavior.
-3. Verify candidate display/button/microSD pinout and create a dedicated board profile.
-4. Verify v0.5.6 pairing behavior on the existing Waveshare board.
-5. If v0.5.6 passes, promote pairing fix into the next baseline.
-6. Add Debug vs Release USB configurations.
-7. Merge HID/DRIVE + microSD MSC.
-8. Add display/status UI.
+1. Make and verify two matching full 16 MB factory Flash dumps from the Pocket-Dongle-S3-0.96.
+2. Verify candidate display/button/microSD pinout using minimal diagnostics.
+3. Build a dedicated Pocket-Dongle board profile for ESP-IDF 6.1 with 16 MB Flash + 8 MB PSRAM.
+4. Confirm TinyUSB HID enumeration over the native Type-A USB path.
+5. Verify v0.5.6 pairing behavior on the existing Waveshare board.
+6. If v0.5.6 passes, promote pairing fix into the next baseline.
+7. Add Debug vs Release USB configurations.
+8. Merge HID/DRIVE + microSD MSC.
+9. Add display/status UI.
