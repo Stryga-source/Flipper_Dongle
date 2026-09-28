@@ -11,6 +11,7 @@ Before changing code, read in this order:
 3. `README.md` / `README_RU.md`
 4. `CHANGELOG.md`
 5. relevant release notes in `docs/`
+6. `docs/hardware/T_DONGLE_CLONE.md` before any Pocket-Dongle hardware work
 
 If chat history and repository documentation disagree, prefer the repository state unless the user explicitly overrides it.
 
@@ -75,24 +76,37 @@ Primary validated board so far:
 
 - Waveshare ESP32-S3-LCD-1.47
 
-### New hardware target — T-Dongle clone
+### New hardware target — Pocket-Dongle-S3-0.96
 
-A non-original T-Dongle-style board has arrived and is the next hardware target.
+The newly arrived T-Dongle-like board has been visually identified from the actual PCB photos as:
 
-Do **not** assume it matches an original LILYGO T-Dongle-S3 pinout or peripherals.
+- silkscreen: `Pocket-Dongle-S3-0.96`
+- MCU: ESP32-S3
+- integrated USB Type-A male plug
+- integrated 0.96-inch display
+- microSD socket
+- one tactile button near USB
+- exposed edge pads
 
-Before porting firmware:
+This is **not an original LILYGO T-Dongle-S3**. Do not use LILYGO pin assignments by assumption.
 
-1. Identify the exact MCU marking.
-2. Identify USB wiring / whether native USB is exposed.
-3. Identify display controller and pins, if present.
-4. Identify microSD wiring, if present.
-5. Identify BOOT/user button GPIOs.
-6. Identify any RGB/status LED pins.
-7. Record photos/markings/pinout in `docs/hardware/`.
-8. Only then add a dedicated board profile/config.
+A matching public Pocket-Dongle-S3 reference exists and candidate display/microSD pins are recorded in `docs/hardware/T_DONGLE_CLONE.md`. Those values remain **REFERENCE** until tested on the user's exact board.
 
-Do not break the Waveshare build while adding clone support.
+Before porting firmware to this target:
+
+1. Preserve the factory firmware; do not erase it first.
+2. Record Windows USB enumeration / VID/PID.
+3. Run non-destructive ESP32-S3 identification (`chip_id`, `flash_id`).
+4. Determine actual flash size.
+5. Determine whether PSRAM exists and its size.
+6. Back up the complete factory flash before overwriting it.
+7. Verify native USB routing.
+8. Verify the tactile button GPIO; do not assume GPIO0.
+9. Verify display controller/pinout with a minimal diagnostic.
+10. Verify microSD pinout with a minimal/read-only diagnostic.
+11. Only then add a dedicated Pocket-Dongle board profile/config.
+
+Do not break the Waveshare build while adding Pocket-Dongle support.
 
 ## USB product plan
 
