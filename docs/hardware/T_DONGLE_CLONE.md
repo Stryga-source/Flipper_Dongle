@@ -17,7 +17,7 @@ The operator ran esptool v5.3.1 against the actual board on `COM23`. These are o
 | MCU | ESP32-S3 QFN56, revision v0.2 | DETECTED BY ESPTOOL |
 | Crystal | 40 MHz | DETECTED BY ESPTOOL |
 | PSRAM | Embedded 8 MB (`AP_3v3`) | DETECTED BY ESPTOOL; runtime use not tested |
-| External flash | Manufacturer ID `0x20`, device ID `0x4018`, detected size 16 MB | DETECTED BY ESPTOOL; complete read not yet checked |
+| External flash | Manufacturer ID `0x20`, device ID `0x4018`, detected size 16 MB | DETECTED BY ESPTOOL; complete 16 MB read succeeded |
 | Flash electrical mode | Quad, 3.3 V per eFuse | REPORTED BY ESPTOOL |
 | Current USB connection | USB-Serial/JTAG on `COM23` | OBSERVED IN ESPTOOL SESSION |
 | Windows USB enumeration | `USB\\VID_303A&PID_1001&MI_00`; localized name `Устройство с последовательным интерфейсом USB (COM23)` | OBSERVED IN WINDOWS DEVICE ENUMERATION |
@@ -31,7 +31,7 @@ The complete factory flash was backed up outside Git as `Pocket-Dongle-S3-0.96_f
 - Marking: **ESP32-S3** — **MARKING / VERIFIED FROM PHOTO**
 - Family: ESP32-S3 — **VERIFIED FROM PHOTO**
 - Native USB capability: ESP32-S3 supports native USB; actual PCB routing still needs confirmation — **INFERRED**
-- Flash size: **16 MB DETECTED BY ESPTOOL** (`0x20:0x4018`); full-image read still pending
+- Flash size: **16 MB DETECTED BY ESPTOOL** (`0x20:0x4018`); complete 16 MB read succeeded
 - PSRAM presence/size: **embedded 8 MB DETECTED BY ESPTOOL**; ESP-IDF runtime test still pending
 
 Do not assume N8/N16 or PSRAM configuration from other Pocket-Dongle revisions. Read it from the actual board before selecting memory configuration.
@@ -65,14 +65,14 @@ These pins must be confirmed with a minimal display test before being used in th
 ### Buttons
 
 - One tactile button is present near the USB connector — **VERIFIED FROM PHOTO**
-- Function: likely BOOT/user button — **INFERRED**
+- The clearer rear photo shows `BOOT` printed next to the tactile button — **MARKING VERIFIED FROM PHOTO**; its electrical behavior is not yet tested
 - GPIO: **UNKNOWN**
 
 Do not assume GPIO0 until tested.
 
 ### Red component / LEDs
 
-- A red component at the end opposite the USB plug is visible in the rear photo. The operator thinks it may be a capacitive antenna — **OPERATOR HYPOTHESIS, NOT VERIFIED**.
+- A red component at the end opposite the USB plug is visible more clearly in the new rear photo. Its edge placement is consistent with a small RF chip antenna; the operator suggests a capacitive antenna — **VISUAL INFERENCE, NOT ELECTRICALLY VERIFIED**. Its exact type is unknown.
 - Do not assign this component an LED or GPIO role without a marking, schematic, or electrical check.
 - No separate RGB/status LED has been identified — **UNKNOWN whether one exists**.
 - GPIO: **UNKNOWN**

@@ -20,6 +20,8 @@ The new board has been visually identified from the actual PCB photos as `Pocket
 
 Progress on 2026-09-28: photos confirm the `Pocket-Dongle-S3-0.96` marking, ESP32-S3 package, USB-A plug, display assembly, tactile button and microSD socket. Operator-provided esptool v5.3.1 output on `COM23` identifies ESP32-S3 QFN56 rev. v0.2, 16 MB flash and reported embedded 8 MB PSRAM. Windows enumerated `USB\\VID_303A&PID_1001&MI_00` on `COM23`; esptool reported USB-Serial/JTAG mode. A full 16 MB factory flash backup was saved outside Git with checked size and SHA-256; its first 1 MB matches a separate read. The operator suspects the visible red component is a capacitive antenna, but this is unverified. USB HID, PSRAM runtime use, all peripheral GPIOs and any separate LED/status output remain unverified.
 
+A clearer rear photo shows `BOOT` silkscreen beside the tactile button. The red edge component looks consistent with a small RF chip antenna, but its exact type is not confirmed. The button GPIO and any LED/status output remain unknown.
+
 ### Phase A — non-destructive identification
 
 1. Completed: connect the board to Windows (`COM23` for this session).
@@ -32,7 +34,7 @@ python -m esptool --chip esp32s3 -p COM23 chip-id
 python -m esptool --chip esp32s3 -p COM23 flash-id
 ```
 
-5. Flash manufacturer/device IDs `0x20:0x4018` and detected size 16 MB are recorded from esptool; verify by complete read.
+5. Completed: flash manufacturer/device IDs `0x20:0x4018` and detected size 16 MB recorded from esptool; a complete 16 MB read succeeded.
 6. esptool reports embedded 8 MB PSRAM; verify runtime use before enabling it in a board profile.
 7. Completed: full 16 MB factory flash backed up outside Git; size and SHA-256 checked, first 1 MB matched a separate read. Preserve the file before project firmware is written.
 

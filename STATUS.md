@@ -133,13 +133,13 @@ A matching public Pocket-Dongle-S3 project was found with schematics/examples an
 
 Identification results and remaining checks:
 
-- esptool v5.3.1 on the actual board detected ESP32-S3 QFN56 rev. v0.2, 16 MB flash (`0x20:0x4018`) and embedded 8 MB PSRAM; a complete flash read and PSRAM runtime test remain pending
+- esptool v5.3.1 on the actual board detected ESP32-S3 QFN56 rev. v0.2, 16 MB flash (`0x20:0x4018`) and embedded 8 MB PSRAM; a complete 16 MB flash read succeeded, while the PSRAM runtime test remains pending
 - Windows enumerated `USB\\VID_303A&PID_1001&MI_00` on `COM23`; esptool reported USB-Serial/JTAG mode
 - native USB HID enumeration and operation
-- tactile button GPIO
+- `BOOT` silkscreen is visible next to the tactile button; its GPIO and behavior still need verification
 - exact display wiring/controller confirmation on this revision
 - exact microSD wiring on this revision
-- the visible red component is tentatively considered an antenna by the operator; its function is unverified, and no separate LED/status GPIO has been identified
+- the visible red component is consistent with a small RF antenna in the clearer photo; exact type/function is unverified, and no separate LED/status GPIO has been identified
 
 The full 16 MB factory flash was backed up outside Git on 2026-09-28 using esptool `--no-stub`. The file size and SHA-256 were checked, and its first 1 MB matches an independent read. The supplied photos and esptool output identify the board and memory, but no peripheral pinout or USB HID behavior has been verified. Preserve the backup before any firmware write.
 
