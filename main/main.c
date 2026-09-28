@@ -275,9 +275,11 @@ static bool send_bridge_report(const bridge_report_t *r)
     if (queued) {
         ESP_LOGI(TAG, "USB HID queued: kind=%d id=%u len=%u",
                  r->kind, r->report_id, len);
-        indicator_set(IND_CONNECTED);
-        indicator_input(r->kind == BRIDGE_REPORT_KEYBOARD
-                            ? IND_INPUT_KEYBOARD : IND_INPUT_MOUSE);
+        if (s_connected) {
+            indicator_set(IND_CONNECTED);
+            indicator_input(r->kind == BRIDGE_REPORT_KEYBOARD
+                                ? IND_INPUT_KEYBOARD : IND_INPUT_MOUSE);
+        }
     } else {
         ESP_LOGE(TAG, "USB HID queue-to-endpoint FAILED: kind=%d id=%u len=%u",
                  r->kind, r->report_id, len);
