@@ -18,7 +18,7 @@ The new board has been visually identified from the actual PCB photos as `Pocket
 
 **Do not erase or overwrite the factory firmware before identification and backup.**
 
-Progress on 2026-09-28: photos confirm the `Pocket-Dongle-S3-0.96` marking, ESP32-S3 package, USB-A plug, display assembly, tactile button and microSD socket. Operator-provided esptool v5.3.1 output on `COM23` identifies ESP32-S3 QFN56 rev. v0.2, 16 MB flash and reported embedded 8 MB PSRAM. Windows enumerated `USB\\VID_303A&PID_1001&MI_00` on `COM23`; esptool reported USB-Serial/JTAG mode. A full 16 MB factory flash backup was saved outside Git with checked size and SHA-256; its first 1 MB matches a separate read. The operator suspects the visible red component is a capacitive antenna, but this is unverified. USB HID, PSRAM runtime use, all peripheral GPIOs and any separate LED/status output remain unverified.
+Progress on 2026-09-28: photos confirm the `Pocket-Dongle-S3-0.96` marking, ESP32-S3 package, USB-A plug, display assembly, tactile button and microSD socket. Operator-provided esptool v5.3.1 output on `COM23` identifies ESP32-S3 QFN56 rev. v0.2, 16 MB flash and reported embedded 8 MB PSRAM. Windows enumerated `USB\\VID_303A&PID_1001&MI_00` on `COM23`; esptool reported USB-Serial/JTAG mode. A full 16 MB factory flash backup was saved outside Git with checked size and SHA-256; its first 1 MB matches a separate read. The operator suspects the visible red component is a capacitive antenna, but this is unverified. Later tests verified display SPI, BOOT GPIO0, USB HID enumeration, and keyboard/mouse input; microSD and any LED/status output remain unverified.
 
 A clearer rear photo shows `BOOT` silkscreen beside the tactile button. The red edge component looks consistent with a small RF chip antenna, but its exact type is not confirmed. The button GPIO and any LED/status output remain unknown.
 
@@ -54,9 +54,9 @@ Using `docs/hardware/T_DONGLE_CLONE.md`:
 
 A matching public Pocket-Dongle-S3 project provides candidate pin assignments. They are **REFERENCE values only** until tested on this exact PCB.
 
-Progress: the separate diagnostic now renders `LCD TEST` on the actual display using the reference ST7735R 160x80 configuration and GPIO10–14. The operator confirmed readable text. The same diagnostic sampled GPIO0; pressing/releasing the physical BOOT button changed the on-screen message to `BOOT DOWN`/`RELEASED`. Those functions are now verified for this board. USB HID enumeration and microSD are still pending.
+Progress: the separate diagnostic now renders `LCD TEST` on the actual display using the reference ST7735R 160x80 configuration and GPIO10–14. The operator confirmed readable text. The same diagnostic sampled GPIO0; pressing/releasing the physical BOOT button changed the on-screen message to `BOOT DOWN`/`RELEASED`. Those functions are now verified for this board. USB HID enumeration and input were subsequently verified; microSD is still pending.
 
-The experimental Pocket bridge has since built and flashed. Windows enumerated its USB HID keyboard and mouse plus CDC COM22; the operator reports that the display progressed from waiting to connected. Keyboard/mouse input, repeated pairing/reset, and microSD are still to verify. The baseline Waveshare build was rebuilt successfully after the Pocket changes.
+The experimental Pocket bridge has since built and flashed. Windows enumerated its USB HID keyboard and mouse plus CDC COM22; the operator reports that the display progressed from waiting to connected, and both keyboard and mouse input work on the PC. Repeated pairing/reset and microSD are still to verify. The baseline Waveshare build was rebuilt successfully after the Pocket changes.
 
 ### Deliverables
 

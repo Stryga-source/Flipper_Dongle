@@ -28,7 +28,7 @@ v0.5.6 adds a pairing-state race-condition fix. It is not yet promoted to the fi
 Primary development board:
 - Waveshare ESP32-S3-LCD-1.47
 
-The non-original `Pocket-Dongle-S3-0.96` is under hardware bring-up. esptool detected an ESP32-S3, 16 MB flash and embedded 8 MB PSRAM; its full factory flash was backed up outside Git. A diagnostic showed readable text on the 160×80 display and confirmed BOOT on GPIO0. An experimental BLE bridge displayed connection states and enumerated as USB HID keyboard, mouse, and CDC COM22 on Windows. Physical input testing and microSD remain pending; see `docs/hardware/T_DONGLE_CLONE.md`.
+The non-original `Pocket-Dongle-S3-0.96` is under hardware bring-up. esptool detected an ESP32-S3, 16 MB flash and embedded 8 MB PSRAM; its full factory flash was backed up outside Git. A diagnostic showed readable text on the 160×80 display and confirmed BOOT on GPIO0. The experimental BLE bridge displayed connection states, enumerated as USB HID keyboard, mouse, and CDC COM22 on Windows, and the operator confirmed keyboard and mouse input from Flipper Bluetooth Remote. Repeated pairing/reset tests and microSD remain pending; see `docs/hardware/T_DONGLE_CLONE.md`.
 
 A separate diagnostic passed a 64 KiB PSRAM write/read test. The board has no physical HID/DRIVE switch. The experimental Pocket build is selected at build time, leaving the Waveshare configuration intact.
 
@@ -111,7 +111,7 @@ idf.py -B build-pocket -DPOCKET_DONGLE=ON build
 idf.py -B build-pocket -DPOCKET_DONGLE=ON -p COM23 flash
 ```
 
-The Pocket profile uses `sdkconfig.pocket.defaults` and an independent generated `sdkconfig.pocket` with the measured 16 MB flash size. The display shows BLE states such as `SCANNING`, `CONNECTING`, `CONNECTED`, and `NO HID`. After flashing, the debug CDC interface appeared as COM22 on the tested PC; COM numbering can change. This remains an experimental build until keyboard/mouse input and repeated pairing are verified on hardware.
+The Pocket profile uses `sdkconfig.pocket.defaults` and an independent generated `sdkconfig.pocket` with the measured 16 MB flash size. The display shows BLE states such as `SCANNING`, `CONNECTING`, `CONNECTED`, and `NO HID`. After flashing, the debug CDC interface appeared as COM22 on the tested PC; COM numbering can change. Keyboard and mouse input worked in the first operator test. This remains an experimental build until repeated pairing/reset behavior is verified on hardware.
 
 ## Version status
 

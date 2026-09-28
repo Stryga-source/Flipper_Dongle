@@ -1,6 +1,6 @@
 # Pocket-Dongle-S3-0.96 Hardware Notes
 
-Status: **MCU/memory identified; display SPI and BOOT GPIO0 verified by an on-board diagnostic and operator observation; USB HID and microSD remain unverified**
+Status: **MCU/memory identified; display SPI and BOOT GPIO0 verified; USB HID keyboard/mouse input confirmed by the operator; microSD remains unverified**
 
 This board was initially described as a non-original T-Dongle-style device. User photos now identify the PCB silkscreen as:
 
@@ -42,7 +42,7 @@ Do not assume N8/N16 or PSRAM configuration from other Pocket-Dongle revisions. 
 - USB D+/D- routing: the board connected to ESP32-S3 USB-Serial/JTAG on `COM23` — **OBSERVED**; USB OTG/HID operation is **TO VERIFY**
 - Windows VID/PID: `303A:1001`; interface `MI_00`, reported as a USB serial device on `COM23` — **OBSERVED**
 - USB-UART bridge present: no dedicated bridge IC is obvious in the supplied photos, but do not rely on this alone — **INFERRED**
-- Intended project role: native USB HID if the PCB routes ESP32-S3 USB directly — **TO VERIFY**
+- Native USB HID: Windows enumerated keyboard and mouse interfaces, and the operator confirmed both worked with Flipper Bluetooth Remote — **VERIFIED IN FIRST FUNCTIONAL TEST**
 
 ### Display
 
@@ -67,7 +67,7 @@ The separate `diagnostics/pocket_dongle_probe` project used these pins, ST7735R 
 - The clearer rear photo shows `BOOT` printed next to the tactile button — **MARKING VERIFIED FROM PHOTO**; its electrical behavior is not yet tested
 - GPIO0: **VERIFIED BY EXPERIMENT**. The diagnostic sampled GPIO0 as input only; pressing BOOT changed the visible text to `BOOT DOWN`, and releasing changed it to `RELEASED`, as confirmed by the operator.
 
-BOOT is the only identified user input. Its short/long-press behavior in the BLE bridge still needs a hardware test.
+BOOT is the only identified user input. A short press initiated the reported connection test; long-press bond reset and repeated pairing still need hardware testing.
 
 ### Mode selector
 
@@ -138,11 +138,11 @@ python -m esptool --chip esp32s3 -p COM23 flash-id
 ```
 
 3. Complete: the full 16 MB factory image is stored outside Git; its byte count and SHA-256 were checked, and its first 1 MiB matches an independent read. Preserve this file before any erase or write.
-4. Completed in the separate `diagnostics/pocket_dongle_probe` project: ESP-IDF 6.1 booted, reported 16,777,216 flash bytes, initialized PSRAM, and passed a 64 KiB PSRAM write/read test over USB-Serial/JTAG logs. A full-memory test and USB HID remain pending.
+4. Completed in the separate `diagnostics/pocket_dongle_probe` project: ESP-IDF 6.1 booted, reported 16,777,216 flash bytes, initialized PSRAM, and passed a 64 KiB PSRAM write/read test over USB-Serial/JTAG logs. Full-memory integrity remains pending; USB HID was later verified with the main bridge.
 5. Completed: GPIO0 input changed with physical BOOT press and release, confirmed through the diagnostic screen.
 6. Completed: candidate TFT configuration displayed readable text; controller package marking and independent resolution measurement remain open.
 7. Test the candidate microSD SPI pinout with read-only card initialization first.
-8. Confirm native USB HID enumeration.
+8. Completed: Windows enumerated HID keyboard/mouse and CDC COM22; the operator confirmed keyboard and mouse input from Flipper Bluetooth Remote.
 
 ## Evidence labels
 
