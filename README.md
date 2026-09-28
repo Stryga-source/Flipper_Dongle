@@ -30,6 +30,8 @@ Primary development board:
 
 The non-original `Pocket-Dongle-S3-0.96` is under hardware identification. esptool detected an ESP32-S3, 16 MB flash and embedded 8 MB PSRAM on the actual board. Its full factory flash has been backed up outside Git. USB HID, display, button and microSD pinouts, and the presence of any status LED, are not verified. It is not a supported firmware target yet; see `docs/hardware/T_DONGLE_CLONE.md`.
 
+A separate first-boot diagnostic has now run on this board and passed a 64 KiB PSRAM write/read test. The board has no physical HID/DRIVE switch. This diagnostic is not the BLE HID bridge and does not establish Pocket-Dongle support.
+
 Development stack:
 - ESP-IDF 6.1
 - NimBLE

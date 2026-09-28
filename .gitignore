@@ -1,0 +1,8 @@
+/build/
+/managed_components/
+/sdkconfig
+/sdkconfig.old
+/build-*.log
+/diagnostics/**/build/
+/diagnostics/**/sdkconfig
+/diagnostics/**/*.log

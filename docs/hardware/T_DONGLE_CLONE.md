@@ -16,7 +16,7 @@ The operator ran esptool v5.3.1 against the actual board on `COM23`. These are o
 | --- | --- | --- |
 | MCU | ESP32-S3 QFN56, revision v0.2 | DETECTED BY ESPTOOL |
 | Crystal | 40 MHz | DETECTED BY ESPTOOL |
-| PSRAM | Embedded 8 MB (`AP_3v3`) | DETECTED BY ESPTOOL; runtime use not tested |
+| PSRAM | Embedded 8 MB (`AP_3v3`) | DETECTED BY ESPTOOL; ESP-IDF boot and a 64 KiB PSRAM write/read test passed |
 | External flash | Manufacturer ID `0x20`, device ID `0x4018`, detected size 16 MB | DETECTED BY ESPTOOL; complete 16 MB read succeeded |
 | Flash electrical mode | Quad, 3.3 V per eFuse | REPORTED BY ESPTOOL |
 | Current USB connection | USB-Serial/JTAG on `COM23` | OBSERVED IN ESPTOOL SESSION |
@@ -32,7 +32,7 @@ The complete factory flash was backed up outside Git as `Pocket-Dongle-S3-0.96_f
 - Family: ESP32-S3 — **VERIFIED FROM PHOTO**
 - Native USB capability: ESP32-S3 supports native USB; actual PCB routing still needs confirmation — **INFERRED**
 - Flash size: **16 MB DETECTED BY ESPTOOL** (`0x20:0x4018`); complete 16 MB read succeeded
-- PSRAM presence/size: **embedded 8 MB DETECTED BY ESPTOOL**; ESP-IDF runtime test still pending
+- PSRAM presence/size: **embedded 8 MB DETECTED BY ESPTOOL**; ESP-IDF initialized PSRAM and a 64 KiB write/read pattern passed. Full 8 MB integrity is not tested.
 
 Do not assume N8/N16 or PSRAM configuration from other Pocket-Dongle revisions. Read it from the actual board before selecting memory configuration.
 
@@ -69,6 +69,10 @@ These pins must be confirmed with a minimal display test before being used in th
 - GPIO: **UNKNOWN**
 
 Do not assume GPIO0 until tested.
+
+### Mode selector
+
+- The operator confirms this Pocket-Dongle has **no physical HID/DRIVE switch**. Do not reuse the older v0.3 SPDT switch behavior as a board assumption.
 
 ### Red component / LEDs
 
@@ -135,7 +139,7 @@ python -m esptool --chip esp32s3 -p COM23 flash-id
 ```
 
 3. Complete: the full 16 MB factory image is stored outside Git; its byte count and SHA-256 were checked, and its first 1 MiB matches an independent read. Preserve this file before any erase or write.
-4. Check the reported 8 MB PSRAM with a minimal ESP-IDF runtime diagnostic before enabling it in the board profile.
+4. Completed in the separate `diagnostics/pocket_dongle_probe` project: ESP-IDF 6.1 booted, reported 16,777,216 flash bytes, initialized PSRAM, and passed a 64 KiB PSRAM write/read test over USB-Serial/JTAG logs. A full-memory test and USB HID remain pending.
 5. Test the tactile button GPIO.
 6. Test the candidate TFT pinout with a minimal display diagnostic; confirm its controller and resolution.
 7. Test the candidate microSD SPI pinout with read-only card initialization first.

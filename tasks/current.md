@@ -35,8 +35,10 @@ python -m esptool --chip esp32s3 -p COM23 flash-id
 ```
 
 5. Completed: flash manufacturer/device IDs `0x20:0x4018` and detected size 16 MB recorded from esptool; a complete 16 MB read succeeded.
-6. esptool reports embedded 8 MB PSRAM; verify runtime use before enabling it in a board profile.
+6. Partially completed: esptool reports embedded 8 MB PSRAM, and an ESP-IDF diagnostic passed a 64 KiB write/read test. Full 8 MB integrity remains untested.
 7. Completed: full 16 MB factory flash backed up outside Git; size and SHA-256 checked, first 1 MB matched a separate read. Preserve the file before project firmware is written.
+
+First firmware experiment completed: `diagnostics/pocket_dongle_probe` built under ESP-IDF 6.1, flashed to the actual board, and emitted four consecutive 64 KiB PSRAM test PASS heartbeats with a 16,777,216-byte flash report. This verifies a small PSRAM region, not all 8 MB or USB HID.
 
 ### Phase B — peripheral verification
 
@@ -48,6 +50,7 @@ Using `docs/hardware/T_DONGLE_CLONE.md`:
 - verify microSD interface and candidate pinout
 - determine backlight pin if needed
 - determine any LED/status output if present
+- account for the operator-confirmed absence of a physical HID/DRIVE selector; do not assign an SPDT switch GPIO to this board
 
 A matching public Pocket-Dongle-S3 project provides candidate pin assignments. They are **REFERENCE values only** until tested on this exact PCB.
 
@@ -124,6 +127,8 @@ Do not remove debugging capability from the Debug build.
 ## Priority 5 — Merge HID/DRIVE mode
 
 Only after pairing and Pocket-Dongle board support are stable.
+
+The Pocket-Dongle has no physical HID/DRIVE switch. The earlier v0.3 SPDT selector cannot be carried over as a Pocket-Dongle board setting; any later DRIVE selection needs a separate design.
 
 Bring forward the previously tested v0.3 behavior:
 
