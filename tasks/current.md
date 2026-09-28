@@ -54,6 +54,10 @@ Using `docs/hardware/T_DONGLE_CLONE.md`:
 
 A matching public Pocket-Dongle-S3 project provides candidate pin assignments. They are **REFERENCE values only** until tested on this exact PCB.
 
+Progress: the separate diagnostic now renders `LCD TEST` on the actual display using the reference ST7735R 160x80 configuration and GPIO10–14. The operator confirmed readable text. The same diagnostic sampled GPIO0; pressing/releasing the physical BOOT button changed the on-screen message to `BOOT DOWN`/`RELEASED`. Those functions are now verified for this board. USB HID enumeration and microSD are still pending.
+
+The experimental Pocket bridge has since built and flashed. Windows enumerated its USB HID keyboard and mouse plus CDC COM22; the operator reports that the display progressed from waiting to connected. Keyboard/mouse input, repeated pairing/reset, and microSD are still to verify. The baseline Waveshare build was rebuilt successfully after the Pocket changes.
+
 ### Deliverables
 
 - update `docs/hardware/T_DONGLE_CLONE.md`

@@ -11,6 +11,8 @@
 #include "esp_psram.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "driver/gpio.h"
+#include "pocket_display.h"
 
 static const char *TAG = "pocket_probe";
 
@@ -49,7 +51,7 @@ void app_main(void)
     bool psram_pass = false;
     esp_chip_info(&chip);
 
-    ESP_LOGI(TAG, "Pocket-Dongle diagnostic build; no display, SD, LED, or button GPIO is driven");
+    ESP_LOGI(TAG, "Pocket-Dongle display/button diagnostic; display GPIO is REFERENCE, not yet verified");
     ESP_LOGI(TAG, "Chip model=%d revision=%d cores=%d", chip.model, chip.revision, chip.cores);
 
     const esp_err_t flash_result = esp_flash_get_size(esp_flash_default_chip, &flash_bytes);
@@ -67,10 +69,41 @@ void app_main(void)
         ESP_LOGE(TAG, "PSRAM not initialized by ESP-IDF");
     }
 
-    ESP_LOGI(TAG, "Diagnostic complete; USB HID and peripheral pinout remain untested");
+    const esp_err_t lcd_result = pocket_display_init();
+    ESP_LOGI(TAG, "Display SPI init: %s (visual confirmation still needed)",
+             esp_err_to_name(lcd_result));
+    if (lcd_result == ESP_OK) {
+        pocket_display_show("LCD TEST", "PRESS BOOT", "CHECK SCREEN");
+    }
+
+    // GPIO0 is an experimental BOOT candidate, sampled as input only.
+    gpio_config_t button = {
+        .pin_bit_mask = 1ULL << GPIO_NUM_0,
+        .mode = GPIO_MODE_INPUT,
+        .pull_up_en = GPIO_PULLUP_ENABLE,
+    };
+    ESP_ERROR_CHECK(gpio_config(&button));
+    int last_boot_level = gpio_get_level(GPIO_NUM_0);
+    TickType_t next_heartbeat = xTaskGetTickCount() + pdMS_TO_TICKS(5000);
+    ESP_LOGI(TAG, "GPIO0 initial level=%d; press BOOT after power-up for candidate verification",
+             last_boot_level);
+    ESP_LOGI(TAG, "Diagnostic complete; USB HID, microSD and other GPIO remain untested");
     while (true) {
-        vTaskDelay(pdMS_TO_TICKS(5000));
-        ESP_LOGI(TAG, "Heartbeat: flash=%" PRIu32 " bytes, PSRAM 64 KiB test=%s",
-                 flash_bytes, psram_pass ? "PASS" : "FAIL");
+        const int level = gpio_get_level(GPIO_NUM_0);
+        if (level != last_boot_level) {
+            ESP_LOGI(TAG, "GPIO0 changed %d -> %d", last_boot_level, level);
+            if (lcd_result == ESP_OK) {
+                pocket_display_show(level ? "RELEASED" : "BOOT DOWN",
+                                    "GPIO CANDIDATE", "CHECK LOG");
+            }
+            last_boot_level = level;
+        }
+        if ((int32_t)(xTaskGetTickCount() - next_heartbeat) >= 0) {
+            ESP_LOGI(TAG, "Heartbeat: flash=%" PRIu32 " PSRAM64K=%s LCD_SPI=%s GPIO0=%d",
+                     flash_bytes, psram_pass ? "PASS" : "FAIL",
+                     esp_err_to_name(lcd_result), level);
+            next_heartbeat += pdMS_TO_TICKS(5000);
+        }
+        vTaskDelay(pdMS_TO_TICKS(20));
     }
 }

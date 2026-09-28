@@ -20,12 +20,18 @@ if(NOT PATCH_RESULT EQUAL 0)
 endif()
 message(STATUS "${PATCH_OUTPUT}")
 
+set(BOARD_DISPLAY_SOURCE "")
+if(POCKET_DONGLE)
+    set(BOARD_DISPLAY_SOURCE "pocket_display.c")
+endif()
+
 idf_component_register(
     SRCS
         "main.c"
         "usb_hid_bridge.c"
         "pair_button.c"
         "indicator.c"
+        ${BOARD_DISPLAY_SOURCE}
         "${PATCHED_HID_GAP}"
     INCLUDE_DIRS
         "."
@@ -36,3 +42,10 @@ idf_component_register(
         bt
         nvs_flash
 )
+
+if(POCKET_DONGLE)
+    target_compile_definitions(${COMPONENT_LIB} PRIVATE POCKET_DONGLE=1)
+    idf_component_get_property(GPIO_LIB esp_driver_gpio COMPONENT_LIB)
+    idf_component_get_property(SPI_LIB esp_driver_spi COMPONENT_LIB)
+    target_link_libraries(${COMPONENT_LIB} PRIVATE ${GPIO_LIB} ${SPI_LIB})
+endif()

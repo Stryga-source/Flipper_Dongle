@@ -1,6 +1,6 @@
 # Pocket-Dongle-S3-0.96 Hardware Notes
 
-Status: **board family identified from photos; MCU and memory identified by esptool; exact peripheral pinout not yet hardware-verified**
+Status: **MCU/memory identified; display SPI and BOOT GPIO0 verified by an on-board diagnostic and operator observation; USB HID and microSD remain unverified**
 
 This board was initially described as a non-original T-Dongle-style device. User photos now identify the PCB silkscreen as:
 
@@ -48,27 +48,26 @@ Do not assume N8/N16 or PSRAM configuration from other Pocket-Dongle revisions. 
 
 - Integrated display present — **VERIFIED FROM PHOTO**
 - PCB marking includes `0.96` — **MARKING**
-- Matching public Pocket-Dongle-S3 reference reports **0.96 inch, 80x160, ST7735-family TFT** — **REFERENCE, NOT YET VERIFIED ON THIS EXACT BOARD**
-- The supplied front photo shows the dark display face, but no readable controller marking or powered image — **CONTROLLER UNKNOWN**
+- Matching public Pocket-Dongle-S3 reference reports **0.96 inch, 80x160, ST7735-family TFT**. The operator saw readable `LCD TEST` on the actual board using that reference configuration — **DISPLAY OUTPUT VERIFIED; controller marking still unread**.
 
 Candidate pinout from the matching public `ronenkr/Pocket-Dongle-S3` project:
 
-- TFT MOSI: GPIO11 — **REFERENCE**
-- TFT SCLK: GPIO10 — **REFERENCE**
-- TFT CS: GPIO12 — **REFERENCE**
-- TFT DC: GPIO13 — **REFERENCE**
-- TFT RST: GPIO14 — **REFERENCE**
-- Backlight: **UNKNOWN on our board**
+- TFT MOSI: GPIO11 — **VERIFIED AS PART OF WORKING DIAGNOSTIC CONFIGURATION**
+- TFT SCLK: GPIO10 — **VERIFIED AS PART OF WORKING DIAGNOSTIC CONFIGURATION**
+- TFT CS: GPIO12 — **VERIFIED AS PART OF WORKING DIAGNOSTIC CONFIGURATION**
+- TFT DC: GPIO13 — **VERIFIED AS PART OF WORKING DIAGNOSTIC CONFIGURATION**
+- TFT RST: GPIO14 — **USED IN WORKING DIAGNOSTIC; individual reset-line function not isolated**
+- Backlight: **screen illuminated without a driven backlight GPIO; control pin remains UNKNOWN**
 
-These pins must be confirmed with a minimal display test before being used in the Flipper Dongle board profile.
+The separate `diagnostics/pocket_dongle_probe` project used these pins, ST7735R init, 160x80 landscape rotation, and green-tab offset (x=1, y=26). It built, was flashed, logged `LCD_SPI=ESP_OK`, and the operator confirmed readable `LCD TEST` on the physical screen. This validates the configuration as a set, but does not identify the display controller from its package marking.
 
 ### Buttons
 
 - One tactile button is present near the USB connector — **VERIFIED FROM PHOTO**
 - The clearer rear photo shows `BOOT` printed next to the tactile button — **MARKING VERIFIED FROM PHOTO**; its electrical behavior is not yet tested
-- GPIO: **UNKNOWN**
+- GPIO0: **VERIFIED BY EXPERIMENT**. The diagnostic sampled GPIO0 as input only; pressing BOOT changed the visible text to `BOOT DOWN`, and releasing changed it to `RELEASED`, as confirmed by the operator.
 
-Do not assume GPIO0 until tested.
+BOOT is the only identified user input. Its short/long-press behavior in the BLE bridge still needs a hardware test.
 
 ### Mode selector
 
@@ -140,8 +139,8 @@ python -m esptool --chip esp32s3 -p COM23 flash-id
 
 3. Complete: the full 16 MB factory image is stored outside Git; its byte count and SHA-256 were checked, and its first 1 MiB matches an independent read. Preserve this file before any erase or write.
 4. Completed in the separate `diagnostics/pocket_dongle_probe` project: ESP-IDF 6.1 booted, reported 16,777,216 flash bytes, initialized PSRAM, and passed a 64 KiB PSRAM write/read test over USB-Serial/JTAG logs. A full-memory test and USB HID remain pending.
-5. Test the tactile button GPIO.
-6. Test the candidate TFT pinout with a minimal display diagnostic; confirm its controller and resolution.
+5. Completed: GPIO0 input changed with physical BOOT press and release, confirmed through the diagnostic screen.
+6. Completed: candidate TFT configuration displayed readable text; controller package marking and independent resolution measurement remain open.
 7. Test the candidate microSD SPI pinout with read-only card initialization first.
 8. Confirm native USB HID enumeration.
 

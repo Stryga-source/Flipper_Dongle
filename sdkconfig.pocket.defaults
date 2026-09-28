@@ -1,0 +1,2 @@
+# Actual Pocket-Dongle-S3-0.96 board: esptool flash-id and full read confirmed 16 MB.
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y

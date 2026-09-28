@@ -1,6 +1,6 @@
 # Pocket-Dongle first boot diagnostic
 
-This is a separate ESP-IDF 6.1 project for the actual `Pocket-Dongle-S3-0.96` board. It checks ESP-IDF startup, flash size, PSRAM initialization, a 64 KiB PSRAM write/read pattern, and USB-Serial/JTAG logging. It does not use any candidate display, button, LED, or microSD GPIO assignments. It does not implement USB HID.
+This is a separate ESP-IDF 6.1 project for the actual `Pocket-Dongle-S3-0.96` board. It checks startup, flash size, PSRAM initialization, a 64 KiB PSRAM write/read pattern, USB-Serial/JTAG logging, the reference ST7735 display pinout, and BOOT as a GPIO0 input. It does not use LED or microSD GPIOs and does not implement USB HID.
 
 The factory 16 MB image was saved and verified before this experiment. Preserve that backup outside Git.
 
@@ -23,3 +23,11 @@ python "$env:IDF_PATH/tools/idf_monitor.py" -p COM23 -b 115200 --no-reset build/
 - Only a 64 KiB PSRAM allocation was exercised; full 8 MB memory integrity and USB HID remain untested.
 - `idf.py monitor` reset this USB-Serial/JTAG connection into ROM download mode. After a watchdog reset, `idf_monitor.py --no-reset` received the periodic heartbeat without another reset.
 - The Pocket-Dongle has no physical HID/DRIVE mode switch. This diagnostic does not use a switch or drive peripheral GPIOs.
+
+## Display and button result on the actual board
+
+- The updated diagnostic built and was flashed on `COM23`; its periodic log reported `LCD_SPI=ESP_OK` and `GPIO0=1` at rest.
+- The operator confirmed readable `LCD TEST` text on the physical display.
+- Pressing BOOT changed the display to `BOOT DOWN`; releasing it changed the display to `RELEASED`. This verifies GPIO0 as the BOOT input on this board.
+- The working display configuration uses SPI SCLK=10, MOSI=11, CS=12, DC=13, RST=14, ST7735R init, 160x80 landscape coordinates, x/y offsets 1/26. The controller's physical marking and any backlight control GPIO are still unknown.
+- This remains a peripheral diagnostic; the BLE HID bridge lives in the main project and requires a separate build.

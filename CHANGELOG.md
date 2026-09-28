@@ -7,6 +7,9 @@
 - clearer photo confirms the `BOOT` button silkscreen and supports, without proving, an RF antenna identification
 - added and flashed a separate ESP-IDF 6.1 first-boot diagnostic; 16 MB flash reported and a 64 KiB PSRAM write/read test passed on the actual board
 - recorded that the Pocket-Dongle has no physical HID/DRIVE switch; BLE HID core remains unchanged
+- added an isolated ST7735 status display for the Pocket build; diagnostic text appeared on the actual screen and BOOT press/release confirmed GPIO0
+- built and flashed the experimental Pocket BLE bridge; Windows enumerated USB HID keyboard, mouse and CDC debug COM22; physical input test remains pending
+- Pocket build uses a separate generated sdkconfig with the measured 16 MB flash size; Waveshare build still compiles
 
 ## v0.5.6 — Test Candidate
 - pairing/reset race-condition fix
