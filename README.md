@@ -113,6 +113,8 @@ idf.py -B build-pocket -DPOCKET_DONGLE=ON -p COM23 flash
 
 The Pocket profile uses `sdkconfig.pocket.defaults` and an independent generated `sdkconfig.pocket` with the measured 16 MB flash size. The display shows BLE states such as `SCANNING`, `CONNECTING`, `CONNECTED`, and `NO HID`. After flashing, the debug CDC interface appeared as COM22 on the tested PC; COM numbering can change. Keyboard and mouse input worked in the first operator test. This remains an experimental build until repeated pairing/reset behavior is verified on hardware.
 
+The next Pocket display revision shows a small dolphin alongside a keyboard or mouse when connected. The icon follows the most recent keyboard or mouse HID report. This revision has built successfully but still needs flashing and visual confirmation on the board.
+
 ## Version status
 
 ### v0.5.5 — First Test Release

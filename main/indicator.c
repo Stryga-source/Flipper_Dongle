@@ -11,6 +11,12 @@ static const char *TAG = "FD_STATUS";
 static indicator_state_t current = -1;
 #ifdef POCKET_DONGLE
 static QueueHandle_t display_queue;
+static indicator_input_t current_input;
+
+typedef struct {
+    indicator_state_t state;
+    indicator_input_t input;
+} display_message_t;
 
 static void display_task(void *arg)
 {
@@ -20,9 +26,13 @@ static void display_task(void *arg)
         ESP_LOGE(TAG, "Pocket display init failed: %s", esp_err_to_name(err));
         vTaskDelete(NULL);
     }
-    indicator_state_t state;
-    while (xQueueReceive(display_queue, &state, portMAX_DELAY) == pdTRUE) {
-        switch (state) {
+    display_message_t message;
+    while (xQueueReceive(display_queue, &message, portMAX_DELAY) == pdTRUE) {
+        if (message.state == IND_CONNECTED && message.input != IND_INPUT_NONE) {
+            pocket_display_show_input(message.input == IND_INPUT_KEYBOARD);
+            continue;
+        }
+        switch (message.state) {
         case IND_BOOT:         pocket_display_show("BOOT", "STARTING BLE AND USB", "WAIT"); break;
         case IND_IDLE:         pocket_display_show("IDLE", "PRESS BOOT TO PAIR", "WAITING"); break;
         case IND_SCANNING:     pocket_display_show("SCANNING", "SEARCHING BLE HID", "WAIT"); break;
@@ -57,7 +67,8 @@ void indicator_init(void)
 {
     current = -1;
 #ifdef POCKET_DONGLE
-    display_queue = xQueueCreate(1, sizeof(indicator_state_t));
+    current_input = IND_INPUT_NONE;
+    display_queue = xQueueCreate(1, sizeof(display_message_t));
     if (display_queue) {
         if (xTaskCreate(display_task, "pocket_display", 4096, NULL, 2, NULL) != pdPASS) {
             ESP_LOGE(TAG, "Pocket display task creation failed");
@@ -77,8 +88,23 @@ void indicator_set(indicator_state_t state)
     current = state;
     ESP_LOGI(TAG, "=== %s ===", state_name(state));
 #ifdef POCKET_DONGLE
+    if (state != IND_CONNECTED) current_input = IND_INPUT_NONE;
     if (display_queue) {
-        (void)xQueueOverwrite(display_queue, &state);
+        display_message_t message = {.state = state, .input = current_input};
+        (void)xQueueOverwrite(display_queue, &message);
     }
+#endif
+}
+
+void indicator_input(indicator_input_t input)
+{
+#ifdef POCKET_DONGLE
+    if (current != IND_CONNECTED || input == IND_INPUT_NONE ||
+        input == current_input || !display_queue) return;
+    current_input = input;
+    display_message_t message = {.state = IND_CONNECTED, .input = input};
+    (void)xQueueOverwrite(display_queue, &message);
+#else
+    (void)input;
 #endif
 }

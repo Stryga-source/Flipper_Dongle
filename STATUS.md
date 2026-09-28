@@ -137,6 +137,7 @@ Identification results and remaining checks:
 - a separate ESP-IDF 6.1 diagnostic was built, flashed, and observed running on the Pocket-Dongle: 16,777,216 flash bytes reported and four consecutive 64 KiB PSRAM write/read PASS heartbeats; full 8 MB PSRAM integrity is untested
 - Windows enumerated `USB\\VID_303A&PID_1001&MI_00` on `COM23`; esptool reported USB-Serial/JTAG mode
 - experimental Pocket bridge with display built and flashed; Windows enumerated HID keyboard, HID mouse, and CDC COM22 (VID:PID 303A:4005). The operator confirmed that Flipper Bluetooth Remote connected and both keyboard and mouse input worked on the PC.
+- next Pocket display build adds a dolphin with a keyboard or mouse according to the most recent queued HID report. Both Pocket and Waveshare compile; this revision is not yet flashed because the running USB CDC interface does not enter ROM boot mode without the physical BOOT sequence.
 - `BOOT` button GPIO0 verified through diagnostic press/release; short/long pairing behavior still needs repeated testing
 - display SPI configuration produced readable `LCD TEST` on this board; controller package marking and backlight control remain unknown
 - exact microSD wiring on this revision

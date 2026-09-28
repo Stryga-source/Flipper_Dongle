@@ -77,6 +77,94 @@ static void line(const char *s, int x, int y, uint16_t color, int scale)
     }
 }
 
+static void fill_rect(int x0, int y0, int x1, int y1, uint16_t color)
+{
+    for (int y = y0; y <= y1; ++y)
+        for (int x = x0; x <= x1; ++x)
+            pixel(x, y, color);
+}
+
+static void fill_ellipse(int cx, int cy, int rx, int ry, uint16_t color)
+{
+    for (int y = -ry; y <= ry; ++y)
+        for (int x = -rx; x <= rx; ++x)
+            if (x * x * ry * ry + y * y * rx * rx <= rx * rx * ry * ry)
+                pixel(cx + x, cy + y, color);
+}
+
+static int edge(int ax, int ay, int bx, int by, int px, int py)
+{
+    return (px - ax) * (by - ay) - (py - ay) * (bx - ax);
+}
+
+static void fill_triangle(int ax, int ay, int bx, int by, int cx, int cy, uint16_t color)
+{
+    int min_x = ax < bx ? (ax < cx ? ax : cx) : (bx < cx ? bx : cx);
+    int max_x = ax > bx ? (ax > cx ? ax : cx) : (bx > cx ? bx : cx);
+    int min_y = ay < by ? (ay < cy ? ay : cy) : (by < cy ? by : cy);
+    int max_y = ay > by ? (ay > cy ? ay : cy) : (by > cy ? by : cy);
+    for (int y = min_y; y <= max_y; ++y) {
+        for (int x = min_x; x <= max_x; ++x) {
+            int e0 = edge(ax, ay, bx, by, x, y);
+            int e1 = edge(bx, by, cx, cy, x, y);
+            int e2 = edge(cx, cy, ax, ay, x, y);
+            if ((e0 >= 0 && e1 >= 0 && e2 >= 0) ||
+                (e0 <= 0 && e1 <= 0 && e2 <= 0)) pixel(x, y, color);
+        }
+    }
+}
+
+static void draw_dolphin(void)
+{
+    const uint16_t blue = 0x047f;
+    const uint16_t pale = 0xbfff;
+    fill_triangle(24, 43, 2, 28, 9, 44, blue);
+    fill_triangle(24, 43, 2, 59, 10, 44, blue);
+    fill_triangle(40, 35, 49, 17, 55, 35, blue);
+    fill_ellipse(46, 43, 31, 13, blue);
+    fill_triangle(69, 39, 88, 40, 78, 47, blue);
+    fill_triangle(47, 51, 60, 68, 56, 50, blue);
+    fill_ellipse(50, 49, 24, 6, pale);
+    fill_rect(62, 36, 64, 38, 0x0000);
+    fill_rect(77, 47, 84, 47, 0x0000);
+    fill_rect(16, 70, 33, 71, 0x047f);
+    fill_rect(42, 73, 62, 74, 0x047f);
+}
+
+static void draw_keyboard(void)
+{
+    const uint16_t rim = 0xffe0;
+    fill_rect(92, 40, 155, 69, rim);
+    fill_rect(95, 43, 152, 66, 0x18c3);
+    for (int row = 0; row < 2; ++row)
+        for (int col = 0; col < 7; ++col)
+            fill_rect(98 + col * 8, 46 + row * 8,
+                      103 + col * 8, 51 + row * 8, 0xffff);
+    fill_rect(110, 62, 139, 64, 0xffff);
+}
+
+static void draw_mouse(void)
+{
+    const uint16_t rim = 0xffe0;
+    fill_ellipse(124, 51, 17, 22, rim);
+    fill_ellipse(124, 51, 14, 19, 0x18c3);
+    fill_rect(123, 32, 125, 46, rim);
+    fill_rect(121, 39, 127, 42, 0xffff);
+    fill_rect(112, 72, 136, 73, 0x07e0);
+}
+
+static void flush_frame(void)
+{
+    const uint8_t columns[] = {0,1,0,160};
+    const uint8_t rows[] = {0,26,0,105};
+    if (command(0x2a, columns, sizeof(columns)) != ESP_OK ||
+        command(0x2b, rows, sizeof(rows)) != ESP_OK) return;
+    const uint8_t write_ram = 0x2c;
+    if (send(false, &write_ram, 1) != ESP_OK) return;
+    if (send(true, frame, sizeof(frame)) != ESP_OK)
+        ESP_LOGE(TAG, "LCD frame transfer failed");
+}
+
 esp_err_t pocket_display_init(void)
 {
     gpio_config_t outputs = {
@@ -145,13 +233,18 @@ void pocket_display_show(const char *line1, const char *line2, const char *line3
     line(line1, 4, 21, 0xffff, 2);
     line(line2, 4, 43, 0xffe0, 1);
     line(line3, 4, 58, 0x07e0, 1);
-    const uint8_t columns[] = {0,1,0,160};
-    const uint8_t rows[] = {0,26,0,105};
-    if (command(0x2a, columns, sizeof(columns)) != ESP_OK ||
-        command(0x2b, rows, sizeof(rows)) != ESP_OK) return;
-    const uint8_t write_ram = 0x2c;
-    if (send(false, &write_ram, 1) != ESP_OK) return;
-    if (send(true, frame, sizeof(frame)) != ESP_OK) {
-        ESP_LOGE(TAG, "LCD frame transfer failed");
-    }
+    flush_frame();
+}
+
+void pocket_display_show_input(bool keyboard)
+{
+    if (!lcd) return;
+    memset(frame, 0, sizeof(frame));
+    line("CONNECTED", 4, 3, 0x07e0, 1);
+    line(keyboard ? "KEYBOARD" : "MOUSE", 101, 3, 0xffe0, 1);
+    for (int x = 0; x < LCD_WIDTH; ++x) pixel(x, 14, 0x047f);
+    draw_dolphin();
+    if (keyboard) draw_keyboard();
+    else draw_mouse();
+    flush_frame();
 }
