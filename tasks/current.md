@@ -18,21 +18,23 @@ The new board has been visually identified from the actual PCB photos as `Pocket
 
 **Do not erase or overwrite the factory firmware before identification and backup.**
 
+Progress on 2026-09-28: photos confirm the `Pocket-Dongle-S3-0.96` marking, ESP32-S3 package, USB-A plug, display assembly, tactile button and microSD socket. Operator-provided esptool v5.3.1 output on `COM23` identifies ESP32-S3 QFN56 rev. v0.2, 16 MB flash and reported embedded 8 MB PSRAM. Windows enumerated `USB\\VID_303A&PID_1001&MI_00` on `COM23`; esptool reported USB-Serial/JTAG mode. A full 16 MB factory flash backup was saved outside Git with checked size and SHA-256; its first 1 MB matches a separate read. USB HID, PSRAM runtime use, all peripheral GPIOs and the red component's function remain unverified.
+
 ### Phase A — non-destructive identification
 
-1. Connect the board to Windows.
-2. Record Device Manager / USB VID/PID / device names.
-3. Enter ESP32-S3 ROM bootloader if required.
-4. Run:
+1. Completed: connect the board to Windows (`COM23` for this session).
+2. Completed: record Windows device name and `USB\\VID_303A&PID_1001&MI_00`.
+3. Completed: esptool reached the ESP32-S3 ROM loader.
+4. Completed: run chip and flash identification; equivalent current syntax:
 
 ```powershell
-esptool.py --chip esp32s3 chip_id
-esptool.py --chip esp32s3 flash_id
+python -m esptool --chip esp32s3 -p COM23 chip-id
+python -m esptool --chip esp32s3 -p COM23 flash-id
 ```
 
-5. Record actual flash manufacturer and size.
-6. Determine whether PSRAM exists; do not assume an Internet-listed N16R8/N8 variant.
-7. Back up the complete factory flash before project firmware is written.
+5. Flash manufacturer/device IDs `0x20:0x4018` and detected size 16 MB are recorded from esptool; verify by complete read.
+6. esptool reports embedded 8 MB PSRAM; verify runtime use before enabling it in a board profile.
+7. Completed: full 16 MB factory flash backed up outside Git; size and SHA-256 checked, first 1 MB matched a separate read. Preserve the file before project firmware is written.
 
 ### Phase B — peripheral verification
 

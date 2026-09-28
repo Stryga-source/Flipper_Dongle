@@ -131,21 +131,22 @@ This is **not** to be treated as an original LILYGO T-Dongle-S3.
 
 A matching public Pocket-Dongle-S3 project was found with schematics/examples and candidate pin assignments. Those values are documented in `docs/hardware/T_DONGLE_CLONE.md` as **REFERENCE**, not yet verified on our exact PCB.
 
-Important unknowns that still require measurement/test:
+Identification results and remaining checks:
 
-- actual flash size
-- PSRAM presence/size
-- native USB routing confirmation
+- esptool v5.3.1 on the actual board detected ESP32-S3 QFN56 rev. v0.2, 16 MB flash (`0x20:0x4018`) and embedded 8 MB PSRAM; a complete flash read and PSRAM runtime test remain pending
+- Windows enumerated `USB\\VID_303A&PID_1001&MI_00` on `COM23`; esptool reported USB-Serial/JTAG mode
+- native USB HID enumeration and operation
 - tactile button GPIO
 - exact display wiring/controller confirmation on this revision
 - exact microSD wiring on this revision
+- whether the visible red component is an LED, and any LED GPIO
 
-**Do not overwrite factory firmware before recording USB enumeration, reading flash ID and backing up the original flash image.**
+The full 16 MB factory flash was backed up outside Git on 2026-09-28 using esptool `--no-stub`. The file size and SHA-256 were checked, and its first 1 MB matches an independent read. The supplied photos and esptool output identify the board and memory, but no peripheral pinout or USB HID behavior has been verified. Preserve the backup before any firmware write.
 
 ## Near-term order
 
-1. Connect the Pocket-Dongle-S3-0.96 and perform non-destructive identification / factory backup.
-2. Verify actual flash/PSRAM and USB behavior.
+1. Completed: non-destructive MCU/flash identification, Windows USB enumeration, and complete factory backup.
+2. Verify PSRAM in an ESP-IDF runtime diagnostic and native USB HID behavior.
 3. Verify candidate display/button/microSD pinout and create a dedicated board profile.
 4. Verify v0.5.6 pairing behavior on the existing Waveshare board.
 5. If v0.5.6 passes, promote pairing fix into the next baseline.

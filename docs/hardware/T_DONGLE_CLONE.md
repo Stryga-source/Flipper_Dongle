@@ -1,12 +1,28 @@
 # Pocket-Dongle-S3-0.96 Hardware Notes
 
-Status: **board family identified from photos; exact electrical pinout not yet hardware-verified**
+Status: **board family identified from photos; MCU and memory identified by esptool; exact peripheral pinout not yet hardware-verified**
 
 This board was initially described as a non-original T-Dongle-style device. User photos now identify the PCB silkscreen as:
 
 `Pocket-Dongle-S3-0.96`
 
 It should be treated as a **Pocket-Dongle-S3 target**, not as an original LILYGO T-Dongle-S3.
+
+## Non-destructive identification supplied by the operator (2026-09-28)
+
+The operator ran esptool v5.3.1 against the actual board on `COM23`. These are observations from `chip_id` and `flash_id`, not a firmware runtime or peripheral test:
+
+| Property | Observed result | Evidence status |
+| --- | --- | --- |
+| MCU | ESP32-S3 QFN56, revision v0.2 | DETECTED BY ESPTOOL |
+| Crystal | 40 MHz | DETECTED BY ESPTOOL |
+| PSRAM | Embedded 8 MB (`AP_3v3`) | DETECTED BY ESPTOOL; runtime use not tested |
+| External flash | Manufacturer ID `0x20`, device ID `0x4018`, detected size 16 MB | DETECTED BY ESPTOOL; complete read not yet checked |
+| Flash electrical mode | Quad, 3.3 V per eFuse | REPORTED BY ESPTOOL |
+| Current USB connection | USB-Serial/JTAG on `COM23` | OBSERVED IN ESPTOOL SESSION |
+| Windows USB enumeration | `USB\\VID_303A&PID_1001&MI_00`; localized name `Устройство с последовательным интерфейсом USB (COM23)` | OBSERVED IN WINDOWS DEVICE ENUMERATION |
+
+The complete factory flash was backed up outside Git as `Pocket-Dongle-S3-0.96_factory_20260928.bin` (16,777,216 bytes). SHA-256: `7eb9b4211c550ddffd57e013513d0c548faf8ade2e0ef4e4ec1a23761228ffdc`. The first 1 MiB matches a separate ROM read byte for byte. The first stub-loader read stopped at about 2.4%; the successful complete read used `--no-stub`. This preserves a recovery image, but it does not verify that the factory application runs correctly after a restore.
 
 ## Evidence from the actual board photos
 
@@ -15,15 +31,16 @@ It should be treated as a **Pocket-Dongle-S3 target**, not as an original LILYGO
 - Marking: **ESP32-S3** — **MARKING / VERIFIED FROM PHOTO**
 - Family: ESP32-S3 — **VERIFIED FROM PHOTO**
 - Native USB capability: ESP32-S3 supports native USB; actual PCB routing still needs confirmation — **INFERRED**
-- Flash size: **UNKNOWN**
-- PSRAM presence/size: **UNKNOWN**
+- Flash size: **16 MB DETECTED BY ESPTOOL** (`0x20:0x4018`); full-image read still pending
+- PSRAM presence/size: **embedded 8 MB DETECTED BY ESPTOOL**; ESP-IDF runtime test still pending
 
 Do not assume N8/N16 or PSRAM configuration from other Pocket-Dongle revisions. Read it from the actual board before selecting memory configuration.
 
 ### USB
 
 - Connector type: integrated **USB Type-A male** — **VERIFIED FROM PHOTO**
-- USB D+/D- routing: **UNKNOWN / TO VERIFY**
+- USB D+/D- routing: the board connected to ESP32-S3 USB-Serial/JTAG on `COM23` — **OBSERVED**; USB OTG/HID operation is **TO VERIFY**
+- Windows VID/PID: `303A:1001`; interface `MI_00`, reported as a USB serial device on `COM23` — **OBSERVED**
 - USB-UART bridge present: no dedicated bridge IC is obvious in the supplied photos, but do not rely on this alone — **INFERRED**
 - Intended project role: native USB HID if the PCB routes ESP32-S3 USB directly — **TO VERIFY**
 
@@ -32,6 +49,7 @@ Do not assume N8/N16 or PSRAM configuration from other Pocket-Dongle revisions. 
 - Integrated display present — **VERIFIED FROM PHOTO**
 - PCB marking includes `0.96` — **MARKING**
 - Matching public Pocket-Dongle-S3 reference reports **0.96 inch, 80x160, ST7735-family TFT** — **REFERENCE, NOT YET VERIFIED ON THIS EXACT BOARD**
+- The supplied front photo shows the dark display face, but no readable controller marking or powered image — **CONTROLLER UNKNOWN**
 
 Candidate pinout from the matching public `ronenkr/Pocket-Dongle-S3` project:
 
@@ -54,7 +72,8 @@ Do not assume GPIO0 until tested.
 
 ### LEDs
 
-- No dedicated RGB/status LED is clearly identifiable from the supplied photos — **UNKNOWN**
+- A red component at the end opposite the USB plug is visible in the rear photo; its function and whether it is an LED are **UNKNOWN**
+- No dedicated RGB/status LED has been electrically identified — **UNKNOWN**
 - GPIO: **UNKNOWN**
 
 ### microSD
@@ -106,23 +125,20 @@ Public projects describe more than one Pocket-Dongle-S3 memory/revision combinat
 
 Before flashing project firmware, preserve the factory image if possible.
 
-1. Connect the Pocket-Dongle to the development PC.
-2. Record the USB VID/PID and Windows device name(s).
-3. Enter ESP32-S3 ROM bootloader if necessary.
-4. Run non-destructive identification first:
+1. Windows enumerated the board as `USB\\VID_303A&PID_1001&MI_00` on `COM23`; record any changes after bootloader or firmware transitions.
+2. The operator has already run non-destructive identification; equivalent current esptool syntax is:
 
 ```powershell
-esptool.py --chip esp32s3 chip_id
-esptool.py --chip esp32s3 flash_id
+python -m esptool --chip esp32s3 -p COM23 chip-id
+python -m esptool --chip esp32s3 -p COM23 flash-id
 ```
 
-5. Record detected flash manufacturer and size.
-6. Determine the full flash size and make a backup **before erasing or overwriting the factory firmware**.
-7. Check whether PSRAM is present using a minimal ESP-IDF diagnostic build before selecting a PSRAM-enabled target.
-8. Test the tactile button GPIO.
-9. Test the candidate TFT pinout with a minimal ST7735 80x160 diagnostic.
-10. Test the candidate microSD SPI pinout with read-only card initialization first.
-11. Confirm native USB HID enumeration.
+3. Complete: the full 16 MB factory image is stored outside Git; its byte count and SHA-256 were checked, and its first 1 MiB matches an independent read. Preserve this file before any erase or write.
+4. Check the reported 8 MB PSRAM with a minimal ESP-IDF runtime diagnostic before enabling it in the board profile.
+5. Test the tactile button GPIO.
+6. Test the candidate TFT pinout with a minimal display diagnostic; confirm its controller and resolution.
+7. Test the candidate microSD SPI pinout with read-only card initialization first.
+8. Confirm native USB HID enumeration.
 
 ## Evidence labels
 

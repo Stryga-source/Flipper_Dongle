@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — Pocket-Dongle identification (documentation only)
+- recorded actual-board photos and esptool identification: ESP32-S3 rev. v0.2, detected 16 MB flash, reported embedded 8 MB PSRAM, USB-Serial/JTAG on COM23
+- full 16 MB factory flash backed up outside Git; USB HID and peripheral pin verification remain pending; firmware unchanged
+
 ## v0.5.6 — Test Candidate
 - pairing/reset race-condition fix
 - deferred pairing after asynchronous disconnect
