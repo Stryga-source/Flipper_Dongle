@@ -10,39 +10,49 @@ Before experimental work, use a dedicated branch.
 
 ---
 
-## Priority 1 — Identify the new T-Dongle clone
+## Priority 1 — Bring up Pocket-Dongle-S3-0.96 safely
 
-A non-original T-Dongle-style board has arrived.
+The new board has been visually identified from the actual PCB photos as `Pocket-Dongle-S3-0.96` with an ESP32-S3 MCU, integrated USB-A, 0.96-inch display, microSD socket, one tactile button, and exposed edge pads.
 
-### Goal
+### First rule
 
-Create a verified hardware profile for the clone before attempting to port the Flipper Dongle firmware.
+**Do not erase or overwrite the factory firmware before identification and backup.**
 
-### Required inputs from the user / photos
+### Phase A — non-destructive identification
 
-When images or markings are available, determine:
+1. Connect the board to Windows.
+2. Record Device Manager / USB VID/PID / device names.
+3. Enter ESP32-S3 ROM bootloader if required.
+4. Run:
 
-- MCU exact marking
-- flash/PSRAM package or module marking
-- USB connector routing
-- display controller marking
-- display resolution
-- display interface and GPIOs
-- BOOT/user button GPIO
-- RGB/status LED type and GPIO
-- microSD presence and wiring
-- power/regulator details if relevant
+```powershell
+esptool.py --chip esp32s3 chip_id
+esptool.py --chip esp32s3 flash_id
+```
+
+5. Record actual flash manufacturer and size.
+6. Determine whether PSRAM exists; do not assume an Internet-listed N16R8/N8 variant.
+7. Back up the complete factory flash before project firmware is written.
+
+### Phase B — peripheral verification
+
+Using `docs/hardware/T_DONGLE_CLONE.md`:
+
+- verify native USB routing / HID enumeration
+- identify tactile button GPIO
+- verify display controller and candidate TFT pinout
+- verify microSD interface and candidate pinout
+- determine backlight pin if needed
+- determine any LED/status output if present
+
+A matching public Pocket-Dongle-S3 project provides candidate pin assignments. They are **REFERENCE values only** until tested on this exact PCB.
 
 ### Deliverables
 
-Create/update:
-
-- `docs/hardware/T_DONGLE_CLONE.md`
-- a pinout table
-- confidence level for every inferred pin
-- notes on which details are measured/verified vs inferred
-
-Do not assume LILYGO T-Dongle-S3 compatibility just because the board looks similar.
+- update `docs/hardware/T_DONGLE_CLONE.md`
+- replace REFERENCE/UNKNOWN entries with VERIFIED values as tests succeed
+- add a dedicated Pocket-Dongle board profile
+- keep Waveshare ESP32-S3-LCD-1.47 build working
 
 ---
 
@@ -75,10 +85,10 @@ If it fails, preserve full serial logs and fix only the pairing state machine; d
 
 ## Priority 3 — Add board abstraction
 
-After clone identification, refactor board-specific pins/peripherals so both targets can coexist:
+After Pocket-Dongle verification, refactor board-specific pins/peripherals so both targets can coexist:
 
 - Waveshare ESP32-S3-LCD-1.47
-- T-Dongle clone
+- Pocket-Dongle-S3-0.96
 
 Keep BLE HID core shared.
 
@@ -109,7 +119,7 @@ Do not remove debugging capability from the Debug build.
 
 ## Priority 5 — Merge HID/DRIVE mode
 
-Only after pairing and clone board support are stable.
+Only after pairing and Pocket-Dongle board support are stable.
 
 Bring forward the previously tested v0.3 behavior:
 
