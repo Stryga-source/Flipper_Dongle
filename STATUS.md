@@ -115,20 +115,40 @@ An earlier `v0.3` hardware-mode prototype was validated separately:
 
 This should be merged only after BLE HID/pairing is stable.
 
-## New hardware arrival
+## New hardware target: Pocket-Dongle-S3-0.96
 
-A **non-original T-Dongle-style board** has arrived.
+The newly arrived non-original T-Dongle-style device has now been visually identified from the actual PCB photos as:
 
-Its exact MCU/pinout/peripherals are not yet identified.
+- PCB silkscreen: `Pocket-Dongle-S3-0.96`
+- MCU marking: **ESP32-S3**
+- integrated USB Type-A male plug
+- integrated 0.96-inch display
+- microSD socket on the back
+- one tactile button near USB
+- exposed edge GPIO/test pads
 
-Next hardware work must begin with board identification. Do not assume original LILYGO pin assignments.
+This is **not** to be treated as an original LILYGO T-Dongle-S3.
+
+A matching public Pocket-Dongle-S3 project was found with schematics/examples and candidate pin assignments. Those values are documented in `docs/hardware/T_DONGLE_CLONE.md` as **REFERENCE**, not yet verified on our exact PCB.
+
+Important unknowns that still require measurement/test:
+
+- actual flash size
+- PSRAM presence/size
+- native USB routing confirmation
+- tactile button GPIO
+- exact display wiring/controller confirmation on this revision
+- exact microSD wiring on this revision
+
+**Do not overwrite factory firmware before recording USB enumeration, reading flash ID and backing up the original flash image.**
 
 ## Near-term order
 
-1. Identify the new T-Dongle clone hardware.
-2. Verify v0.5.6 pairing behavior on the existing Waveshare board.
-3. If v0.5.6 passes, promote pairing fix into the next baseline.
-4. Add a separate board profile for the clone without breaking Waveshare.
-5. Add Debug vs Release USB configurations.
-6. Merge HID/DRIVE + microSD MSC.
-7. Add display/status UI.
+1. Connect the Pocket-Dongle-S3-0.96 and perform non-destructive identification / factory backup.
+2. Verify actual flash/PSRAM and USB behavior.
+3. Verify candidate display/button/microSD pinout and create a dedicated board profile.
+4. Verify v0.5.6 pairing behavior on the existing Waveshare board.
+5. If v0.5.6 passes, promote pairing fix into the next baseline.
+6. Add Debug vs Release USB configurations.
+7. Merge HID/DRIVE + microSD MSC.
+8. Add display/status UI.
