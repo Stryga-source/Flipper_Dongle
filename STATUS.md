@@ -139,7 +139,7 @@ Identification results and remaining checks:
 - tactile button GPIO
 - exact display wiring/controller confirmation on this revision
 - exact microSD wiring on this revision
-- whether the visible red component is an LED, and any LED GPIO
+- the visible red component is tentatively considered an antenna by the operator; its function is unverified, and no separate LED/status GPIO has been identified
 
 The full 16 MB factory flash was backed up outside Git on 2026-09-28 using esptool `--no-stub`. The file size and SHA-256 were checked, and its first 1 MB matches an independent read. The supplied photos and esptool output identify the board and memory, but no peripheral pinout or USB HID behavior has been verified. Preserve the backup before any firmware write.
 

@@ -28,7 +28,7 @@ v0.5.6 adds a pairing-state race-condition fix. It is not yet promoted to the fi
 Primary development board:
 - Waveshare ESP32-S3-LCD-1.47
 
-The non-original `Pocket-Dongle-S3-0.96` is under hardware identification. esptool detected an ESP32-S3, 16 MB flash and embedded 8 MB PSRAM on the actual board. Its full factory flash has been backed up outside Git. USB HID, display, button, LED and microSD pinouts are not verified. It is not a supported firmware target yet; see `docs/hardware/T_DONGLE_CLONE.md`.
+The non-original `Pocket-Dongle-S3-0.96` is under hardware identification. esptool detected an ESP32-S3, 16 MB flash and embedded 8 MB PSRAM on the actual board. Its full factory flash has been backed up outside Git. USB HID, display, button and microSD pinouts, and the presence of any status LED, are not verified. It is not a supported firmware target yet; see `docs/hardware/T_DONGLE_CLONE.md`.
 
 Development stack:
 - ESP-IDF 6.1

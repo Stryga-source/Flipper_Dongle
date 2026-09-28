@@ -70,10 +70,11 @@ These pins must be confirmed with a minimal display test before being used in th
 
 Do not assume GPIO0 until tested.
 
-### LEDs
+### Red component / LEDs
 
-- A red component at the end opposite the USB plug is visible in the rear photo; its function and whether it is an LED are **UNKNOWN**
-- No dedicated RGB/status LED has been electrically identified — **UNKNOWN**
+- A red component at the end opposite the USB plug is visible in the rear photo. The operator thinks it may be a capacitive antenna — **OPERATOR HYPOTHESIS, NOT VERIFIED**.
+- Do not assign this component an LED or GPIO role without a marking, schematic, or electrical check.
+- No separate RGB/status LED has been identified — **UNKNOWN whether one exists**.
 - GPIO: **UNKNOWN**
 
 ### microSD
