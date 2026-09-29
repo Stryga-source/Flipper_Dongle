@@ -2,6 +2,11 @@
 
 Last updated: 2026-09-29
 
+Planned only: investigate a cable-like Flipper-to-PC connection through the
+dongle, initially interpreted as qFlipper access. The current firmware remains
+a BLE HID-to-USB HID bridge; its CDC port is for dongle logs. See
+`docs/FLIPPER_CABLE_LIKE_CONNECTION.md` for the feasibility steps and limits.
+
 Pocket HID release package: `pocket-hid-2026-09-29` provides a full image
 for offset `0x0` and an application-only update for offset `0x10000`.
 See `docs/releases/POCKET_HID_20260929.md` for hashes and flashing steps.

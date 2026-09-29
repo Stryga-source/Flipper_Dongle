@@ -159,3 +159,17 @@ mouse and BadUSB art. Still to verify or design:
 - other-device art on an unrecognized HID report
 - DRIVE mode after microSD verification
 - dedicated error art (current error text remains as a diagnostic fallback)
+
+---
+
+## Planned — Flipper connection through the dongle as if by USB cable
+
+The operator wants the Flipper-to-PC connection through the Pocket-Dongle to
+feel like connecting the Flipper directly by cable. Initial interpretation:
+qFlipper device access, not just the existing Bluetooth Remote/BadUSB HID
+input. Confirm the desired PC functions before implementation.
+
+Start with the feasibility and acceptance plan in
+`docs/FLIPPER_CABLE_LIKE_CONNECTION.md`. Keep this separate from the tested HID
+release and the unverified v0.5.6 pairing candidate. Do not claim transparent
+USB behavior from the existing HID + debug CDC interfaces.
