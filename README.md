@@ -1,8 +1,14 @@
 # Flipper Dongle
 
+[Русская версия](README_RU.md) · [Pocket firmware release](https://github.com/stryginuv/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29) · [Flashing guide](docs/releases/POCKET_HID_20260929.md)
+
 Flipper Dongle is a standalone ESP32-S3 USB adapter that turns Flipper Zero Bluetooth HID profiles into a standard USB keyboard and mouse for a PC.
 
 The PC does not need a driver, companion application, or custom Flipper application. The dongle acts as a BLE HID host on the Flipper side and as a standard USB HID device on the computer side.
+
+This is a BLE HID bridge. qFlipper, USB file access, and Flipper firmware updates
+through the dongle are not implemented; the [cable-like connection](docs/FLIPPER_CABLE_LIKE_CONNECTION.md)
+is a research plan.
 
 ## Current status
 
@@ -31,6 +37,10 @@ Primary development board:
 The non-original `Pocket-Dongle-S3-0.96` is a working USB HID target. esptool detected an ESP32-S3, 16 MB flash and embedded 8 MB PSRAM; its full factory flash was backed up outside Git. The operator confirmed Bluetooth Remote keyboard/mouse input, BadUSB operation and display scenes on the actual board. BOOT on GPIO0 and the 160×80 screen were also tested. Repeated pairing/reset tests and microSD remain pending; see `docs/hardware/T_DONGLE_CLONE.md`.
 
 A separate diagnostic passed a 64 KiB PSRAM write/read test. The board has no physical HID/DRIVE switch. The Pocket build is selected at build time, leaving the Waveshare configuration intact.
+
+An original LILYGO T-Dongle-S3 has a separate [hardware-untested pre-release](https://github.com/stryginuv/Flipper_Dongle/releases/tag/lilygo-t-dongle-s3-test-2026-09-29)
+from the `codex/lilygo-board-profile` branch. Its profile is not in `main` and
+its image must not be flashed to the Pocket or Waveshare board.
 
 Development stack:
 - ESP-IDF 6.1
@@ -99,25 +109,26 @@ The [flashing guide](docs/releases/POCKET_HID_20260929.md) gives the exact
 addresses and explains when an update preserves BLE bonds. These binaries are
 for the `Pocket-Dongle-S3-0.96` with 16 MB flash, not the Waveshare board.
 
-Windows PowerShell:
+Install ESP-IDF 6.1 and activate its environment using the `export.ps1` from
+your own ESP-IDF installation. From the repository root, the default Waveshare
+build is:
 
 ```powershell
-$env:IDF_TOOLS_PATH="C:\Espressif\tools"
-C:\esp\v6.1\esp-idf\export.ps1
-
 idf.py set-target esp32s3
 idf.py build
-idf.py flash
 ```
 
 Pocket-Dongle build, from the repository root:
 
 ```powershell
 idf.py -B build-pocket -DPOCKET_DONGLE=ON build
-idf.py -B build-pocket -DPOCKET_DONGLE=ON -p COM23 flash
+idf.py -B build-pocket -DPOCKET_DONGLE=ON -p COM_PORT flash
 ```
 
 The Pocket profile uses `sdkconfig.pocket.defaults` and an independent generated `sdkconfig.pocket` with the measured 16 MB flash size. After flashing, the debug CDC interface appeared as COM22 on the tested PC; COM numbering can change. The operator considers this HID target working. Pairing/reset stress tests, microSD and the PIN placard still need separate verification.
+
+Replace `COM_PORT` with the bootloader port shown on your computer. Preserve a
+factory flash backup before installing a full image on a new board.
 
 The Pocket screen uses full-screen 160x80 RGB565 dolphin scenes based on the operator-approved references. It cycles three search frames, keeps the Flipper target fixed during that animation, shows a found scene, and switches to keyboard or mouse art after the corresponding USB HID report is queued. BadUSB uses its own art based on the connected BLE identity. An unrecognized HID report shows joystick/other-device art but is **not** forwarded as a USB joystick.
 

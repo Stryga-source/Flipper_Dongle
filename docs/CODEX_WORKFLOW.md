@@ -12,7 +12,8 @@ Do not begin implementation until these files are read.
 
 ## Branch policy
 
-- `main` = v0.5.5 working baseline.
+- `main` = working HID core plus hardware-tested Pocket-Dongle keyboard, mouse,
+  BadUSB, and display scenes. Keep the original first-test snapshot available.
 - `v0.5.5-first-test` = preserved first-test snapshot.
 - `v0.5.6-test-candidate` = pairing race-fix candidate awaiting verification.
 
@@ -60,9 +61,12 @@ Before ending a meaningful task:
 
 ## Immediate project priorities
 
-1. Identify the non-original T-Dongle-style board.
+1. Finish Pocket pairing-code, pairing/reset, and microSD hardware checks.
 2. Hardware-test v0.5.6 pairing/reset race fix.
-3. Add a board abstraction without breaking Waveshare.
+3. Keep the experimental original LILYGO profile on its separate branch until
+   a physical board is tested; preserve the Waveshare build.
 4. Create Debug (HID+CDC) and Release (HID-only) configurations.
-5. Merge the old proven HID/DRIVE + microSD MSC path.
-6. Add display UI only after core reliability and pinout validation.
+5. Design Pocket DRIVE selection before adapting microSD MSC; Pocket has no
+   physical HID/DRIVE switch.
+6. Investigate cable-like Flipper connection per
+   `docs/FLIPPER_CABLE_LIKE_CONNECTION.md`.

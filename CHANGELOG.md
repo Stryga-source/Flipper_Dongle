@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — Public repository preparation
+- clarified the tested Pocket release versus the hardware-untested LILYGO
+  pre-release, and linked both from the README
+- corrected portable ESP-IDF build instructions and the current branch workflow
+- clarified that cable-like qFlipper access is only planned
+
 ## Unreleased — Pocket-Dongle bring-up
 - packaged the hardware-tested Pocket build as a single-image first-install binary and an application-only update binary; documented flash addresses, bond erasure, and SHA-256 checksums for the `pocket-hid-2026-09-29` GitHub release
 - operator accepted the Pocket HID dongle as working; preserved `v0.5.5-first-test` as rollback, integrated the tested Pocket branch into `main`, and replaced an incomplete reference ZIP with the full approved montage

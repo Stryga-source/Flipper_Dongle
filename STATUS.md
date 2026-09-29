@@ -2,6 +2,11 @@
 
 Last updated: 2026-09-29
 
+Both GitHub releases are present with separate Pocket and LILYGO binaries.
+The original LILYGO profile is on `codex/lilygo-board-profile`, not in `main`,
+and remains hardware-untested. Repository visibility and licensing are
+separate decisions.
+
 Planned only: investigate a cable-like Flipper-to-PC connection through the
 dongle, initially interpreted as qFlipper access. The current firmware remains
 a BLE HID-to-USB HID bridge; its CDC port is for dongle logs. See

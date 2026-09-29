@@ -1,8 +1,14 @@
 # Flipper Dongle
 
+[English](README.md) · [Релиз прошивки Pocket](https://github.com/stryginuv/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29) · [Инструкция по прошивке](docs/releases/POCKET_HID_20260929.md)
+
 Flipper Dongle — отдельный USB-адаптер на ESP32-S3, который превращает Bluetooth HID-профили Flipper Zero в обычную USB-клавиатуру и мышь для ПК.
 
 На компьютере не нужны драйвер, отдельная программа или специальное приложение для Flipper. Донгл работает как BLE HID Host со стороны Flipper и как стандартное USB HID-устройство со стороны компьютера.
+
+Сейчас это мост BLE HID. Доступ через qFlipper, файлы по USB и обновление
+прошивки Flipper через донгл не реализованы; [подключение как по кабелю](docs/FLIPPER_CABLE_LIKE_CONNECTION.md)
+пока исследуется.
 
 ## Текущий статус
 
@@ -29,6 +35,11 @@ v0.5.6 исправляет гонку состояний при сбросе с
 - Waveshare ESP32-S3-LCD-1.47
 
 Неоригинальный `Pocket-Dongle-S3-0.96` — рабочий USB HID-таргет. На фактической плате esptool обнаружил ESP32-S3, flash 16 МБ и встроенную PSRAM 8 МБ. Полный образ заводской flash сохранён вне Git. Пользователь подтвердил работу клавиатуры и мыши через Flipper Bluetooth Remote, BadUSB и сцен на экране 160×80. Кнопка BOOT проверена на GPIO0. Распиновка microSD и наличие отдельного статусного LED пока не проверены. У донгла нет физического переключателя HID/DRIVE; подробности в `docs/hardware/T_DONGLE_CLONE.md`.
+
+Для оригинального LILYGO T-Dongle-S3 опубликован отдельный [тестовый релиз без
+проверки на плате](https://github.com/stryginuv/Flipper_Dongle/releases/tag/lilygo-t-dongle-s3-test-2026-09-29)
+из ветки `codex/lilygo-board-profile`. Этого профиля нет в `main`;
+LILYGO-бинарник не подходит для Pocket и Waveshare.
 
 Стек разработки:
 - ESP-IDF 6.1
@@ -97,25 +108,23 @@ v0.5.5 хранит до 4 BLE HID bond-профилей.
 адреса записи и пояснено, какой вариант сохраняет BLE-сопряжения. Эти файлы
 рассчитаны на Pocket с flash 16 МБ, а не на плату Waveshare.
 
-Windows PowerShell:
+Установите ESP-IDF 6.1 и активируйте среду через `export.ps1` из своей
+установки ESP-IDF. Сборка Waveshare из корня репозитория:
 
 ```powershell
-$env:IDF_TOOLS_PATH="C:\Espressif\tools"
-C:\esp\v6.1\esp-idf\export.ps1
-
 idf.py set-target esp32s3
 idf.py build
-idf.py flash
 ```
 
 Сборка Pocket-Dongle из корня репозитория:
 
 ```powershell
 idf.py -B build-pocket -DPOCKET_DONGLE=ON build
-idf.py -B build-pocket -DPOCKET_DONGLE=ON -p COM23 flash
+idf.py -B build-pocket -DPOCKET_DONGLE=ON -p COM_PORT flash
 ```
 
-`COM23` — порт загрузчика в проведённом тесте; номер порта может измениться.
+Замените `COM_PORT` на порт загрузчика вашего ПК. Перед записью полного образа
+на новую плату сохраните резервную копию заводской flash.
 Пользователь считает HID-таргет рабочим. Повторные стресс-тесты сопряжения,
 microSD и плакат с PIN ещё требуют отдельной проверки.
 
