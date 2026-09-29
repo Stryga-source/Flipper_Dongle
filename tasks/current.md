@@ -1,5 +1,10 @@
 # Current Tasks — Flipper Dongle
 
+Release v0.5.6 is packaged on `codex/release-056` as three separate full
+images for Pocket, Waveshare, and original LILYGO T-Dongle-S3. Pocket pairing
+code and reconnect were checked on hardware. The LILYGO profile has a passing
+build but awaits its first physical-board test. See `docs/releases/V0_5_6.md`.
+
 The public repository and both firmware releases are online. Publication did
 not change firmware behavior or complete the remaining hardware checks.
 

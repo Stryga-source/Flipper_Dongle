@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.5.6 — three-board release
+- packaged three full images from one source tree for Pocket, Waveshare, and
+  original LILYGO T-Dongle-S3; each has a separate board configuration
+- Pocket pairing/reset race fix and matching BLE numeric-comparison placard
+  checked on hardware, with the code held until confirmation
+- Pocket, Waveshare, and LILYGO builds pass under ESP-IDF 6.1; the original
+  LILYGO profile still needs a physical-board test
+- USB product description updated to v0.5.6 Debug while retaining the USB
+  serial identifier for existing host configurations
+
 ## Unreleased — Pocket pairing candidate
 - ported the v0.5.6 pairing/reset race fix into a separate Pocket branch
 - Pocket and Waveshare builds passed; Pocket app-only flash hash verified

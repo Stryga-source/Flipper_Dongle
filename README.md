@@ -1,6 +1,6 @@
 # Flipper Dongle
 
-[Русская версия](README_RU.md) · [Pocket firmware release](https://github.com/Stryga-source/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29) · [Flashing guide](docs/releases/POCKET_HID_20260929.md)
+[Русская версия](README_RU.md) · [v0.5.6 release](https://github.com/Stryga-source/Flipper_Dongle/releases/tag/v0.5.6) · [Flashing guide](docs/releases/V0_5_6.md)
 
 Licensed under [MIT](LICENSE). Keep the license notice, including the link to
 the [original repository](https://github.com/Stryga-source/Flipper_Dongle), when
@@ -29,9 +29,9 @@ Working and tested:
 - support for multiple bonded BLE HID identities
 - CDC serial debug interface for development
 
-**Next test candidate: v0.5.6 — awaiting verification**
+**v0.5.6 — three-board firmware release**
 
-v0.5.6 adds a pairing-state race-condition fix. It is not yet promoted to the first stable/test baseline until repeated hardware testing is complete.
+v0.5.6 fixes the pairing/reset race and offers separate full images for Pocket, Waveshare, and original LILYGO T-Dongle-S3. Pocket pairing-code display and reconnect were checked on hardware. The LILYGO image has only been build-tested; see the [release guide](docs/releases/V0_5_6.md) for board-specific checks.
 
 ## Hardware
 
@@ -42,9 +42,9 @@ The non-original `Pocket-Dongle-S3-0.96` is a working USB HID target. esptool de
 
 A separate diagnostic passed a 64 KiB PSRAM write/read test. The board has no physical HID/DRIVE switch. The Pocket build is selected at build time, leaving the Waveshare configuration intact.
 
-An original LILYGO T-Dongle-S3 has a separate [hardware-untested pre-release](https://github.com/Stryga-source/Flipper_Dongle/releases/tag/lilygo-t-dongle-s3-test-2026-09-29)
-from the `codex/lilygo-board-profile` branch. Its profile is not in `main` and
-its image must not be flashed to the Pocket or Waveshare board.
+The original LILYGO T-Dongle-S3 has a separate image in v0.5.6. Its display
+pins differ from Pocket's. Its profile is not in `main`, and it has not been
+tested on LILYGO hardware. Do not flash its image to Pocket or Waveshare.
 
 Development stack:
 - ESP-IDF 6.1
@@ -107,11 +107,11 @@ A later milestone will merge the working BLE HID bridge with the previously test
 
 ## Build
 
-For the hardware-tested Pocket-Dongle, download the ready-to-flash full or
-application-only binary from the [Pocket HID release](https://github.com/Stryga-source/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29).
-The [flashing guide](docs/releases/POCKET_HID_20260929.md) gives the exact
-addresses and explains when an update preserves BLE bonds. These binaries are
-for the `Pocket-Dongle-S3-0.96` with 16 MB flash, not the Waveshare board.
+Download the board-specific full image from the [v0.5.6 release](https://github.com/Stryga-source/Flipper_Dongle/releases/tag/v0.5.6).
+The [flashing guide](docs/releases/V0_5_6.md) gives the address and SHA-256
+for each board. Full images clear saved BLE bonds. The older
+[Pocket HID release](https://github.com/Stryga-source/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29)
+still provides an application-only update of the previous version.
 
 Install ESP-IDF 6.1 and activate its environment using the `export.ps1` from
 your own ESP-IDF installation. From the repository root, the default Waveshare
@@ -145,8 +145,10 @@ The original Pocket scene image was flashed with verified write hashes. The oper
 ### v0.5.5 — First Test Release
 This is the first version considered usable enough for wider hardware testing.
 
-### v0.5.6 — Test Candidate
-Pairing race-condition fix. Awaiting repeated verification before promotion.
+### v0.5.6 — Three-board release
+Pairing race fix and separate full images for Pocket, Waveshare, and original
+LILYGO T-Dongle-S3. Pocket pairing and display checks passed; LILYGO hardware
+validation remains open.
 
 ## Project scope
 

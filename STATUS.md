@@ -2,6 +2,12 @@
 
 Last updated: 2026-09-29
 
+Release v0.5.6 uses `codex/release-056` with three separate full
+images. Pocket pairing/reset and code display were checked on hardware before
+release packaging. All three board builds pass; original LILYGO has no
+hardware test. See `docs/releases/V0_5_6.md`. The known working `main` remains
+available as a rollback base.
+
 The repository is public at `Stryga-source/Flipper_Dongle` under MIT.
 Both GitHub releases have separate Pocket and LILYGO binaries. The original
 LILYGO profile is on `codex/lilygo-board-profile`, not in `main`, and
