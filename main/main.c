@@ -34,6 +34,18 @@ static int s_bond_count = 0;
 
 static esp_hidh_dev_t *s_current_dev = NULL;
 
+/*
+ * Pair/reset synchronization.
+ *
+ * esp_hidh_dev_close() is asynchronous and esp_hid_scan() is synchronous.
+ * These flags + generation counter prevent a short BOOT request from being
+ * erased by a late CLOSE event and prevent an old scan result from opening a
+ * device after bonds were cleared.
+ */
+static volatile bool s_pair_reset_in_progress = false;
+static volatile bool s_pair_after_close = false;
+static volatile uint32_t s_scan_generation = 1;
+
 typedef enum {
     BRIDGE_REPORT_KEYBOARD = 1,
     BRIDGE_REPORT_MOUSE = 2,
@@ -240,21 +252,52 @@ static void hidh_callback(void *handler_args, esp_event_base_t base,
         break;
     }
 
-    case ESP_HIDH_CLOSE_EVENT:
+    case ESP_HIDH_CLOSE_EVENT: {
         queue_release_all();
         indicator_source_badusb(false);
         s_current_dev = NULL;
         s_connected = false;
-        s_pair_scan_requested = false;
+
+        const bool reset_close = s_pair_reset_in_progress;
+        const bool deferred_pair = s_pair_after_close;
+
+        s_pair_reset_in_progress = false;
+        s_pair_after_close = false;
 
         (void)refresh_bond_state();
-        s_auto_reconnect = s_have_bond;
 
-        indicator_set(IND_DISCONNECTED);
-        ESP_LOGI(TAG, "Flipper BLE HID disconnected, reason=%d auto_reconnect=%d",
-                 p->close.reason, s_auto_reconnect);
+        if (reset_close) {
+            s_auto_reconnect = false;
+
+            if (deferred_pair) {
+                s_pair_scan_requested = true;
+                ESP_LOGI(TAG,
+                         "Deferred BOOT pairing request released after CLOSE");
+                indicator_set(IND_SCANNING);
+            } else {
+                s_pair_scan_requested = false;
+                indicator_set(IND_DISCONNECTED);
+            }
+        } else {
+            s_auto_reconnect = s_have_bond;
+            if (!s_pair_scan_requested) {
+                indicator_set(IND_DISCONNECTED);
+            }
+        }
+
+        ESP_LOGI(TAG,
+                 "CLOSE: reason=%d reset_close=%d deferred_pair=%d "
+                 "auto_reconnect=%d pair_requested=%d gen=%lu",
+                 p->close.reason,
+                 reset_close,
+                 deferred_pair,
+                 s_auto_reconnect,
+                 s_pair_scan_requested,
+                 (unsigned long)s_scan_generation);
+
         esp_hidh_dev_free(p->close.dev);
         break;
+    }
 
     default:
         break;
@@ -327,7 +370,12 @@ static void scan_and_connect_task(void *arg)
         const bool pair_now = s_pair_scan_requested;
         const bool reconnect_now = s_auto_reconnect && s_have_bond;
 
-        if (!s_connected && (pair_now || reconnect_now)) {
+        if (!s_connected &&
+            !s_pair_reset_in_progress &&
+            (pair_now || reconnect_now)) {
+
+            const uint32_t my_generation = s_scan_generation;
+
             if (pair_now) {
                 s_pair_scan_requested = false;
             }
@@ -337,10 +385,25 @@ static void scan_and_connect_task(void *arg)
 
             indicator_set(IND_SCANNING);
             ESP_LOGI(TAG,
-                     "%s scan for BLE HID...",
-                     pair_now ? "PAIRING" : "AUTO-RECONNECT");
+                     "%s scan for BLE HID... gen=%lu",
+                     pair_now ? "PAIRING" : "AUTO-RECONNECT",
+                     (unsigned long)my_generation);
 
             esp_hid_scan(5, &n, &results);
+
+            if (my_generation != s_scan_generation ||
+                s_pair_reset_in_progress ||
+                s_connected) {
+                ESP_LOGW(TAG,
+                         "Discarding stale BLE scan: scan_gen=%lu current_gen=%lu reset=%d connected=%d",
+                         (unsigned long)my_generation,
+                         (unsigned long)s_scan_generation,
+                         s_pair_reset_in_progress,
+                         s_connected);
+                esp_hid_scan_results_free(results);
+                vTaskDelay(pdMS_TO_TICKS(50));
+                continue;
+            }
 
             esp_hid_scan_result_t *best = NULL;
 
@@ -367,17 +430,28 @@ static void scan_and_connect_task(void *arg)
                 }
             }
 
+            if (my_generation != s_scan_generation ||
+                s_pair_reset_in_progress ||
+                s_connected) {
+                ESP_LOGW(TAG, "Scan invalidated before open; ignoring result");
+                esp_hid_scan_results_free(results);
+                continue;
+            }
+
             if (best) {
                 indicator_set(IND_FOUND);
-                ESP_LOGI(TAG, "Opening BLE HID: %s (%s)",
+                ESP_LOGI(TAG,
+                         "Opening BLE HID: %s (%s) gen=%lu",
                          best->name ? best->name : "(no name)",
-                         pair_now ? "pairing" : "bonded reconnect");
+                         pair_now ? "pairing" : "bonded reconnect",
+                         (unsigned long)my_generation);
+                indicator_set(IND_CONNECTING);
                 esp_hidh_dev_open(best->bda, best->transport, best->ble.addr_type);
             } else if (pair_now) {
                 indicator_set(IND_DISCONNECTED);
                 ESP_LOGW(TAG,
                          "Pairing scan finished: no HID found. "
-                         "Start Bluetooth Remote, then short-press BOOT again.");
+                         "Open Bluetooth Remote/BadUSB and short-press BOOT again.");
             } else {
                 indicator_set(IND_DISCONNECTED);
             }
@@ -385,7 +459,7 @@ static void scan_and_connect_task(void *arg)
             esp_hid_scan_results_free(results);
         }
 
-        vTaskDelay(pdMS_TO_TICKS(1500));
+        vTaskDelay(pdMS_TO_TICKS(250));
     }
 }
 
@@ -397,36 +471,57 @@ static void pair_button_task(void *arg)
         pair_button_event_t ev = pair_button_poll();
 
         if (ev == PAIR_BUTTON_SHORT) {
-            if (s_connected) {
+            if (s_pair_reset_in_progress) {
+                s_pair_after_close = true;
+                s_scan_generation++;
+                ESP_LOGI(TAG,
+                         "BOOT short: pairing deferred until BLE close completes gen=%lu",
+                         (unsigned long)s_scan_generation);
+                indicator_set(IND_SCANNING);
+            } else if (s_connected) {
                 ESP_LOGI(TAG, "BOOT short ignored: HID already connected");
             } else {
-                ESP_LOGI(TAG, "BOOT short: one pairing scan requested");
+                s_scan_generation++;
                 s_auto_reconnect = false;
                 s_pair_scan_requested = true;
+
+                ESP_LOGI(TAG,
+                         "BOOT short: one pairing scan requested gen=%lu",
+                         (unsigned long)s_scan_generation);
                 indicator_set(IND_SCANNING);
             }
+
         } else if (ev == PAIR_BUTTON_LONG) {
-            ESP_LOGW(TAG, "BOOT long: clearing BLE HID bond");
+            ESP_LOGW(TAG, "BOOT long: clearing ALL BLE HID bonds");
             indicator_set(IND_PAIR_RESET);
 
+            s_scan_generation++;
+
             s_pair_scan_requested = false;
+            s_pair_after_close = false;
             s_auto_reconnect = false;
             s_have_bond = false;
             s_bond_count = 0;
             memset(s_bonded_peers, 0, sizeof(s_bonded_peers));
 
             queue_release_all();
-
-            if (s_current_dev && esp_hidh_dev_exists(s_current_dev)) {
-                ESP_LOGI(TAG, "Closing current BLE HID connection");
-                (void)esp_hidh_dev_close(s_current_dev);
-            }
-
             ble_store_clear();
 
+            if (s_current_dev && esp_hidh_dev_exists(s_current_dev)) {
+                s_pair_reset_in_progress = true;
+                ESP_LOGI(TAG,
+                         "Closing current BLE HID connection; reset pending gen=%lu",
+                         (unsigned long)s_scan_generation);
+                (void)esp_hidh_dev_close(s_current_dev);
+            } else {
+                s_pair_reset_in_progress = false;
+                s_connected = false;
+                s_current_dev = NULL;
+                ESP_LOGI(TAG, "No active BLE HID connection; reset completed immediately");
+            }
+
             ESP_LOGW(TAG,
-                     "Bond cleared. Dongle is IDLE. "
-                     "Start Bluetooth Remote and short-press BOOT to pair.");
+                     "All bonds cleared. Dongle stays IDLE until short BOOT.");
             indicator_set(IND_DISCONNECTED);
         }
 
@@ -445,7 +540,7 @@ void app_main(void)
         ESP_ERROR_CHECK(ret);
     }
 
-    ESP_LOGI(TAG, "Flipper Dongle v0.5.5: multi-profile bonded reconnect");
+    ESP_LOGI(TAG, "Flipper Dongle v0.5.6: pairing race fix");
     indicator_init();
     ESP_ERROR_CHECK(pair_button_init());
     ESP_ERROR_CHECK(usb_hid_bridge_init());
