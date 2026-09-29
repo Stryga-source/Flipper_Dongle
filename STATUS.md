@@ -30,7 +30,7 @@ Preserved first-test baseline:
 - version: `v0.5.5`
 - status: **first hardware-tested test release**
 
-Current `main` adds the operator-tested Pocket-Dongle keyboard, mouse,
+Current `main` adds the hardware-tested Pocket-Dongle keyboard, mouse,
 BadUSB and display scenes. The original `v0.5.5-first-test` branch remains
 available for rollback. Pocket microSD/DRIVE and the pairing-code placard
 still need separate hardware validation.
@@ -158,23 +158,23 @@ Identification results and remaining checks:
 - esptool v5.3.1 on the actual board detected ESP32-S3 QFN56 rev. v0.2, 16 MB flash (`0x20:0x4018`) and embedded 8 MB PSRAM; a complete 16 MB flash read succeeded
 - a separate ESP-IDF 6.1 diagnostic was built, flashed, and observed running on the Pocket-Dongle: 16,777,216 flash bytes reported and four consecutive 64 KiB PSRAM write/read PASS heartbeats; full 8 MB PSRAM integrity is untested
 - Windows enumerated `USB\\VID_303A&PID_1001&MI_00` on `COM23`; esptool reported USB-Serial/JTAG mode
-- experimental Pocket bridge with display built and flashed; Windows enumerated HID keyboard, HID mouse, and CDC COM22 (VID:PID 303A:4005). The operator confirmed that Flipper Bluetooth Remote connected and both keyboard and mouse input worked on the PC.
+- experimental Pocket bridge with display built and flashed; Windows enumerated HID keyboard, HID mouse, and CDC COM22 (VID:PID 303A:4005). Flipper Bluetooth Remote connection and keyboard/mouse input on the PC were verified.
 - an earlier small dolphin/icon revision was superseded by the full-screen scene pack described below
-- on `codex/pocket-screen-scenes`, the operator-approved nine reference pictures were adapted to 160x80 RGB565, with a tenth idle frame. The Pocket and Waveshare configurations both compile. Pocket flashing on COM23 verified all written hashes on 2026-09-29. After a BOOT-free USB reconnect, the operator confirmed the new pictures, all three scan frames, and keyboard/mouse scene switching; Windows exposed CDC COM22 (`303A:4005`).
-- Pocket UI also has BadUSB art by BLE identity, other-device art for unrecognized HID reports, and a BLE pairing-code placard. The other-device scene does not add joystick USB forwarding. The operator confirmed BadUSB works on this build: CDC logs show a `BadUSB` HID connection and USB keyboard reports queued. The pairing-code screen has not yet been tested by the operator.
+- on `codex/pocket-screen-scenes`, the approved nine reference pictures were adapted to 160x80 RGB565, with a tenth idle frame. The Pocket and Waveshare configurations both compile. Pocket flashing on COM23 verified all written hashes on 2026-09-29. After a BOOT-free USB reconnect, the new pictures, all three scan frames, and keyboard/mouse scene switching were verified; Windows exposed CDC COM22 (`303A:4005`).
+- Pocket UI also has BadUSB art by BLE identity, other-device art for unrecognized HID reports, and a BLE pairing-code placard. The other-device scene does not add joystick USB forwarding. BadUSB operation was verified on this build: CDC logs show a `BadUSB` HID connection and USB keyboard reports queued. The pairing-code screen has not yet been tested on hardware.
 - A short BOOT press during an already-running automatic scan is serviced after that 5-second scan completes; this explains the initial apparent BadUSB delay in the 2026-09-29 test. No BLE core change was made for it.
 - `BOOT` button GPIO0 verified through diagnostic press/release; short/long pairing behavior still needs repeated testing
 - display SPI configuration produced readable `LCD TEST` on this board; controller package marking and backlight control remain unknown
 - exact microSD wiring on this revision
 - the visible red component is consistent with a small RF antenna in the clearer photo; exact type/function is unverified, and no separate LED/status GPIO has been identified
-- the operator confirms no physical HID/DRIVE switch on this board; the older SPDT selector design is not applicable to this target
+- no physical HID/DRIVE switch is present on this board; the older SPDT selector design is not applicable to this target
 
 The full 16 MB factory flash was backed up outside Git on 2026-09-28 using esptool `--no-stub`. The file size and SHA-256 were checked, and its first 1 MB matches an independent read. The Pocket build uses a separate 16 MB sdkconfig; the Waveshare build was rebuilt successfully. Preserve the factory backup for recovery.
 
 ## Near-term order
 
 1. Completed: non-destructive MCU/flash identification, Windows USB enumeration, and complete factory backup.
-2. Completed: ESP-IDF boot, flash size report, a 64 KiB PSRAM test, native USB HID keyboard/mouse enumeration, and operator-confirmed keyboard/mouse input through the Pocket bridge.
+2. Completed: ESP-IDF boot, flash size report, a 64 KiB PSRAM test, native USB HID keyboard/mouse enumeration, and verified keyboard/mouse input through the Pocket bridge.
 3. Completed: display text and BOOT GPIO0 verification. Next: repeated pairing/reset tests, microSD pinout, and final board profile.
 4. Verify v0.5.6 pairing behavior on the existing Waveshare board.
 5. If v0.5.6 passes, promote pairing fix into the next baseline.
