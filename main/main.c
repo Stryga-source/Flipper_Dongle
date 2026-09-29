@@ -7,6 +7,7 @@
 #include "nvs_flash.h"
 #include "esp_hidh.h"
 #include "esp_hid_gap.h"
+#include "flipper_hidh_pairing.h"
 #include "host/ble_hs.h"
 #include "host/ble_sm.h"
 #include "nimble/nimble_port.h"
@@ -542,6 +543,8 @@ void app_main(void)
 
     ESP_LOGI(TAG, "Flipper Dongle v0.5.6: pairing race fix");
     indicator_init();
+    flipper_hidh_set_pairing_code_cb(indicator_pairing_code);
+    flipper_hidh_set_pairing_done_cb(indicator_pairing_done);
     ESP_ERROR_CHECK(pair_button_init());
     ESP_ERROR_CHECK(usb_hid_bridge_init());
 

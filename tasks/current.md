@@ -65,7 +65,7 @@ Progress: the separate diagnostic now renders `LCD TEST` on the actual display u
 
 The Pocket bridge is working on the actual board. Windows enumerated USB HID keyboard, mouse and CDC COM22. The operator confirmed Bluetooth Remote keyboard/mouse input, BadUSB operation, and the full-screen scan/keyboard/mouse scenes. Pocket and Waveshare builds pass. The 2026-09-29 Pocket write hashes verified and the app started after a BOOT-free USB reconnect.
 
-Remaining Pocket checks: repeated pairing/reset behavior, the pairing-code placard, the other-device scene, microSD and any LED/status output. The joystick picture marks an unrecognized HID report; joystick USB forwarding is not implemented. During the BadUSB test, short BOOT landed during an automatic 5-second scan, so the explicit pairing scan started after that scan completed.
+Remaining Pocket checks: broader repeated pairing/reset behavior, the other-device scene, microSD and any LED/status output. The joystick picture marks an unrecognized HID report; joystick USB forwarding is not implemented. During the BadUSB test, short BOOT landed during an automatic 5-second scan, so the explicit pairing scan started after that scan completed.
 
 ### Deliverables
 
@@ -78,7 +78,13 @@ Remaining Pocket checks: repeated pairing/reset behavior, the pairing-code placa
 
 Experimental Pocket integration on `codex/pocket-pairing-056` built for Pocket
 and Waveshare on 2026-09-29. The Pocket app-only image was flashed on
-COM23 with a verified write hash; startup and pairing tests remain pending.
+COM23 with a verified write hash. The operator confirmed a repeat connection
+after bond reset and a new scan. The missing on-screen pairing code was traced
+to the HID Host passkey callback. The first project-local fix was flashed and
+the operator confirmed matching digits, but reported that the placard vanished
+too quickly. The final fix holds it until the BLE pairing result. Both board
+builds pass, and the operator confirmed the Pocket code stayed visible until
+Flipper confirmation. Broader repeated pairing/reset and BadUSB tests remain.
 See `docs/releases/POCKET_PAIRING_056_TEST_20260929.md`.
 
 ## Priority 2 — Hardware-test v0.5.6 pairing fix
@@ -163,7 +169,7 @@ Do not runtime-hot-switch USB descriptors unless deliberately redesigned and tes
 Implemented for Pocket: idle, three-frame scan, Flipper found, keyboard,
 mouse and BadUSB art. Still to verify or design:
 
-- actual pairing code on the placard
+- actual pairing code on the placard — confirmed on Pocket; held until Flipper confirmation
 - other-device art on an unrecognized HID report
 - DRIVE mode after microSD verification
 - dedicated error art (current error text remains as a diagnostic fallback)

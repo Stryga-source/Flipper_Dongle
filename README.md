@@ -129,7 +129,7 @@ idf.py -B build-pocket -DPOCKET_DONGLE=ON build
 idf.py -B build-pocket -DPOCKET_DONGLE=ON -p COM_PORT flash
 ```
 
-The Pocket profile uses `sdkconfig.pocket.defaults` and an independent generated `sdkconfig.pocket` with the measured 16 MB flash size. After flashing, the debug CDC interface appeared as COM22 on the tested PC; COM numbering can change. The operator considers this HID target working. Pairing/reset stress tests, microSD and the PIN placard still need separate verification.
+The Pocket profile uses `sdkconfig.pocket.defaults` and an independent generated `sdkconfig.pocket` with the measured 16 MB flash size. After flashing, the debug CDC interface appeared as COM22 on the tested PC; COM numbering can change. The operator considers this HID target working. The experimental pairing branch has a hardware-checked PIN placard; broader pairing/reset stress tests and microSD remain pending.
 
 Replace `COM_PORT` with the bootloader port shown on your computer. Preserve a
 factory flash backup before installing a full image on a new board.
@@ -138,7 +138,7 @@ The Pocket screen uses full-screen 160x80 RGB565 dolphin scenes based on the ope
 
 For BLE display-passkey or numeric-comparison events, the six digits are drawn on the placard held by the dolphin. The image asset itself contains no fixed PIN. The current project-local NimBLE helper uses `123456` for its display-passkey action; numeric comparison uses the BLE event value. This UI change does not alter the pairing policy.
 
-The new Pocket image was flashed with verified write hashes. After reconnecting without BOOT, the operator confirmed the new art, three-frame search animation, keyboard/mouse switching and BadUSB operation; Windows again exposed CDC COM22. The pairing-code screen has not yet been confirmed on hardware. Waveshare still builds from the same source tree.
+The original Pocket scene image was flashed with verified write hashes. The operator confirmed the new art, three-frame search animation, keyboard/mouse switching and BadUSB operation. A later pairing test exposed a missing on-screen numeric-comparison code: the active HID Host callback did not notify the display. The experimental branch now forwards the actual BLE code and keeps it visible until the encryption result or disconnect. The operator confirmed that matching digits stayed on the Pocket screen until Flipper confirmation; Waveshare still builds from the same source tree.
 
 ## Version status
 

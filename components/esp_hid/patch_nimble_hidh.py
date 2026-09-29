@@ -135,6 +135,44 @@ fixed = r'''                } else if (suuid == BLE_SVC_DIS_UUID16) {
 
 text = text[:start] + fixed + text[end:]
 
+# The HID host owns the active GAP callback. Forward the real numeric-comparison
+# value to the application without making this component depend on main.
+include = '#include "esp_hid_common.h"'
+if include not in text:
+    raise SystemExit("ERROR: HID host include not found")
+text = text.replace(include, include + '\n#include "flipper_hidh_pairing.h"', 1)
+
+marker = 'static const char *TAG = "NIMBLE_HIDH";'
+if marker not in text:
+    raise SystemExit("ERROR: HID host tag not found")
+text = text.replace(marker, marker +
+                    '\nstatic flipper_hidh_pairing_code_cb_t pairing_code_cb;'
+                    '\nstatic flipper_hidh_pairing_done_cb_t pairing_done_cb;', 1)
+
+for marker in ('    case BLE_GAP_EVENT_DISCONNECT:\n',
+               '    case BLE_GAP_EVENT_ENC_CHANGE:\n'):
+    if marker not in text:
+        raise SystemExit(f"ERROR: HID host event not found: {marker.strip()}")
+    text = text.replace(marker, marker +
+                        '        if (pairing_done_cb) pairing_done_cb();\n', 1)
+
+marker = '    case BLE_GAP_EVENT_PASSKEY_ACTION:\n'
+if marker not in text:
+    raise SystemExit("ERROR: HID host passkey event not found")
+text = text.replace(marker, marker +
+                    '        if (event->passkey.params.action == BLE_SM_IOACT_NUMCMP && pairing_code_cb) {\n'
+                    '            pairing_code_cb(event->passkey.params.numcmp);\n'
+                    '        }\n', 1)
+
+marker = '/*\n * Public Functions\n * */'
+if marker not in text:
+    raise SystemExit("ERROR: HID host public functions marker not found")
+text = text.replace(marker,
+                    'void flipper_hidh_set_pairing_code_cb(flipper_hidh_pairing_code_cb_t cb)\n'
+                    '{\n    pairing_code_cb = cb;\n}\n\n'
+                    'void flipper_hidh_set_pairing_done_cb(flipper_hidh_pairing_done_cb_t cb)\n'
+                    '{\n    pairing_done_cb = cb;\n}\n\n' + marker, 1)
+
 dst.parent.mkdir(parents=True, exist_ok=True)
 dst.write_text(text, encoding="utf-8")
 print(f"Flipper Dongle: patched ESP-IDF NimBLE HID Host -> {dst}")

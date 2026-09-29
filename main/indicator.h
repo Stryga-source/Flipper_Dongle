@@ -29,3 +29,4 @@ void indicator_set(indicator_state_t state);
 void indicator_input(indicator_input_t input);
 void indicator_source_badusb(bool enabled);
 void indicator_pairing_code(uint32_t code);
+void indicator_pairing_done(void);

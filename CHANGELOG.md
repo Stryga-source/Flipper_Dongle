@@ -3,7 +3,12 @@
 ## Unreleased — Pocket pairing candidate
 - ported the v0.5.6 pairing/reset race fix into a separate Pocket branch
 - Pocket and Waveshare builds passed; Pocket app-only flash hash verified
-- startup, repeated pairing/reset and BadUSB hardware checks pending
+- repeat pairing after bond reset confirmed on Pocket; broader stress tests pending
+- connected the active NimBLE HID Host numeric-comparison event to the Pocket
+  pairing placard; the operator confirmed matching digits on Flipper and Pocket
+- replaced the too-short fixed placard interval with a hold until BLE pairing
+  completes or the link disconnects; both board builds pass, and the operator
+  confirmed the Pocket code stayed until Flipper confirmation
 
 ## 2026-09-29 — Public repository launch
 - published the MIT-licensed repository and both firmware releases with a

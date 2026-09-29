@@ -13,7 +13,16 @@ SHA-256 values are unchanged.
 Experimental Pocket pairing candidate on `codex/pocket-pairing-056`: the
 v0.5.6 race fix was ported onto Pocket `main`; Pocket and Waveshare builds
 passed. The Pocket application was written at `0x10000` on COM23 with
-verified write hash. Post-reconnect startup and pairing tests remain pending.
+verified write hash. The operator confirmed repeat connection after long-BOOT
+bond reset and short-BOOT scan. Serial logs confirm the reset/scan/reconnect
+sequence. The Flipper showed a numeric-comparison code, but the Pocket did not:
+the active NimBLE HID Host callback never forwarded it to the display. The
+follow-up build was flashed on Pocket; the operator confirmed that the code
+matched Flipper, but the placard disappeared too quickly. A further change
+holds it until the BLE encryption result or disconnect. Both board builds pass;
+the updated Pocket app was flashed with a verified hash. The operator confirmed
+that matching digits stayed on screen until Flipper confirmation, and CDC logs
+showed encrypted, authenticated bonding when the placard was released.
 See `docs/releases/POCKET_PAIRING_056_TEST_20260929.md`.
 
 Planned only: investigate a cable-like Flipper-to-PC connection through the
@@ -38,8 +47,8 @@ Preserved first-test baseline:
 
 Current `main` adds the operator-tested Pocket-Dongle keyboard, mouse,
 BadUSB and display scenes. The original `v0.5.5-first-test` branch remains
-available for rollback. Pocket microSD/DRIVE and the pairing-code placard
-still need separate hardware validation.
+available for rollback. Pocket microSD/DRIVE remains unverified. The
+pairing-code placard is verified on the experimental branch above.
 
 Current next candidate:
 
@@ -167,7 +176,7 @@ Identification results and remaining checks:
 - experimental Pocket bridge with display built and flashed; Windows enumerated HID keyboard, HID mouse, and CDC COM22 (VID:PID 303A:4005). The operator confirmed that Flipper Bluetooth Remote connected and both keyboard and mouse input worked on the PC.
 - an earlier small dolphin/icon revision was superseded by the full-screen scene pack described below
 - on `codex/pocket-screen-scenes`, the operator-approved nine reference pictures were adapted to 160x80 RGB565, with a tenth idle frame. The Pocket and Waveshare configurations both compile. Pocket flashing on COM23 verified all written hashes on 2026-09-29. After a BOOT-free USB reconnect, the operator confirmed the new pictures, all three scan frames, and keyboard/mouse scene switching; Windows exposed CDC COM22 (`303A:4005`).
-- Pocket UI also has BadUSB art by BLE identity, other-device art for unrecognized HID reports, and a BLE pairing-code placard. The other-device scene does not add joystick USB forwarding. The operator confirmed BadUSB works on this build: CDC logs show a `BadUSB` HID connection and USB keyboard reports queued. The pairing-code screen has not yet been tested by the operator.
+- Pocket UI also has BadUSB art by BLE identity, other-device art for unrecognized HID reports, and a BLE pairing-code placard. The other-device scene does not add joystick USB forwarding. The operator confirmed BadUSB works on this build: CDC logs show a `BadUSB` HID connection and USB keyboard reports queued. The pairing-code screen was later verified on `codex/pocket-pairing-056`.
 - A short BOOT press during an already-running automatic scan is serviced after that 5-second scan completes; this explains the initial apparent BadUSB delay in the 2026-09-29 test. No BLE core change was made for it.
 - `BOOT` button GPIO0 verified through diagnostic press/release; short/long pairing behavior still needs repeated testing
 - display SPI configuration produced readable `LCD TEST` on this board; controller package marking and backlight control remain unknown
@@ -186,4 +195,4 @@ The full 16 MB factory flash was backed up outside Git on 2026-09-28 using espto
 5. If v0.5.6 passes, promote pairing fix into the next baseline.
 6. Add Debug vs Release USB configurations.
 7. Merge HID/DRIVE + microSD MSC.
-8. Completed: Pocket scan/keyboard/mouse/BadUSB scenes tested on hardware. Remaining: pairing-code placard and other-device art.
+8. Completed: Pocket scan/keyboard/mouse/BadUSB scenes and pairing-code placard tested on hardware. Remaining: other-device art.

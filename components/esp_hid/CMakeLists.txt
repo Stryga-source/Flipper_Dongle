@@ -44,7 +44,7 @@ endif()
 
 idf_component_register(
     SRCS "${srcs}"
-    INCLUDE_DIRS "${IDF_ESP_HID_DIR}/include"
+    INCLUDE_DIRS "." "${IDF_ESP_HID_DIR}/include"
     PRIV_INCLUDE_DIRS "${IDF_ESP_HID_DIR}/private"
     REQUIRES esp_event bt
 )

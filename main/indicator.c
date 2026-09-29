@@ -1,4 +1,5 @@
 #include "indicator.h"
+#include <stdatomic.h>
 #include "esp_log.h"
 #ifdef POCKET_DONGLE
 #include "freertos/FreeRTOS.h"
@@ -13,6 +14,7 @@ static indicator_state_t current = -1;
 static QueueHandle_t display_queue;
 static indicator_input_t current_input;
 static bool badusb_source;
+static atomic_bool pairing_code_active;
 
 typedef struct {
     indicator_state_t state;
@@ -61,7 +63,12 @@ static void display_task(void *arg)
         case IND_CONNECTING:
             pocket_display_show_scene(POCKET_SCENE_FOUND); break;
         case IND_PAIRING_CODE:
-            pocket_display_show_pairing_code(message.code); break;
+            pocket_display_show_pairing_code(message.code);
+            /* Later status messages stay queued until BLE pairing resolves. */
+            while (atomic_load(&pairing_code_active)) {
+                vTaskDelay(pdMS_TO_TICKS(50));
+            }
+            break;
         default:               pocket_display_show("ERROR", "CHECK SERIAL LOG", "RETRY"); break;
         }
     }
@@ -91,6 +98,7 @@ void indicator_init(void)
 #ifdef POCKET_DONGLE
     current_input = IND_INPUT_NONE;
     badusb_source = false;
+    atomic_store(&pairing_code_active, false);
     display_queue = xQueueCreate(1, sizeof(display_message_t));
     if (display_queue) {
         if (xTaskCreate(display_task, "pocket_display", 4096, NULL, 2, NULL) != pdPASS) {
@@ -146,6 +154,7 @@ void indicator_pairing_code(uint32_t code)
 {
 #ifdef POCKET_DONGLE
     current = IND_PAIRING_CODE;
+    atomic_store(&pairing_code_active, true);
     current_input = IND_INPUT_NONE;
     ESP_LOGI(TAG, "=== PAIRING CODE ===");
     if (display_queue) {
@@ -156,5 +165,15 @@ void indicator_pairing_code(uint32_t code)
     }
 #else
     (void)code;
+#endif
+}
+
+void indicator_pairing_done(void)
+{
+#ifdef POCKET_DONGLE
+    if (atomic_exchange(&pairing_code_active, false)) {
+        ESP_LOGI(TAG, "Pairing code display complete");
+        if (current == IND_PAIRING_CODE) indicator_set(IND_CONNECTING);
+    }
 #endif
 }
