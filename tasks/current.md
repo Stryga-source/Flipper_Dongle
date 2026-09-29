@@ -76,6 +76,11 @@ Remaining Pocket checks: repeated pairing/reset behavior, the pairing-code placa
 
 ---
 
+Experimental Pocket integration on `codex/pocket-pairing-056` built for Pocket
+and Waveshare on 2026-09-29. The Pocket app-only image was flashed on
+COM23 with a verified write hash; startup and pairing tests remain pending.
+See `docs/releases/POCKET_PAIRING_056_TEST_20260929.md`.
+
 ## Priority 2 — Hardware-test v0.5.6 pairing fix
 
 Branch:

@@ -10,6 +10,12 @@ privately; public commit IDs changed when personal commit-email metadata was
 replaced with GitHub noreply addresses. Source trees and release binary
 SHA-256 values are unchanged.
 
+Experimental Pocket pairing candidate on `codex/pocket-pairing-056`: the
+v0.5.6 race fix was ported onto Pocket `main`; Pocket and Waveshare builds
+passed. The Pocket application was written at `0x10000` on COM23 with
+verified write hash. Post-reconnect startup and pairing tests remain pending.
+See `docs/releases/POCKET_PAIRING_056_TEST_20260929.md`.
+
 Planned only: investigate a cable-like Flipper-to-PC connection through the
 dongle, initially interpreted as qFlipper access. The current firmware remains
 a BLE HID-to-USB HID bridge; its CDC port is for dongle logs. See

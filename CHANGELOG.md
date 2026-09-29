@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — Pocket pairing candidate
+- ported the v0.5.6 pairing/reset race fix into a separate Pocket branch
+- Pocket and Waveshare builds passed; Pocket app-only flash hash verified
+- startup, repeated pairing/reset and BadUSB hardware checks pending
+
 ## 2026-09-29 — Public repository launch
 - published the MIT-licensed repository and both firmware releases with a
   Git history using GitHub noreply commit addresses
