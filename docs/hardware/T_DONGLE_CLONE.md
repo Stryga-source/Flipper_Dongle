@@ -2,6 +2,14 @@
 
 Status: **MCU/memory identified; display SPI and BOOT GPIO0 verified; USB HID keyboard/mouse input confirmed by the operator; microSD remains unverified**
 
+2026-09-29 screen update: a 160x80 RGB565 scene pack based on the operator's
+approved montage was built for this board and flashed on COM23 with verified
+write hashes. After a BOOT-free USB reconnect the operator saw the new art and
+confirmed the three-frame scan and keyboard/mouse scene changes. CDC COM22
+(`303A:4005`) enumerated again. BadUSB art and the dynamic pairing-code
+placard have not been separately tested on hardware. This does not establish
+the microSD pinout or a backlight-control GPIO.
+
 This board was initially described as a non-original T-Dongle-style device. User photos now identify the PCB silkscreen as:
 
 `Pocket-Dongle-S3-0.96`

@@ -103,6 +103,26 @@ for i, line in enumerate(lines):
         lines[i] = indent + "pkey.numcmp_accept = 1; /* Flipper Dongle */\n"
 text = "".join(lines)
 
+# The display only observes the passkey selected by the existing NimBLE path.
+# Do not alter the pairing policy or the USB HID transport here.
+include = '#include "esp_hid_gap.h"'
+if include not in text:
+    raise SystemExit("ERROR: HID GAP include not found")
+text = text.replace(include, include + '\n#include "indicator.h"', 1)
+
+display_key = 'pkey.passkey = 123456; // This is the passkey to be entered on peer'
+if display_key not in text:
+    raise SystemExit("ERROR: NimBLE display passkey path not found")
+text = text.replace(display_key,
+                    display_key + '\n            indicator_pairing_code(pkey.passkey);', 1)
+
+numeric_confirm = 'pkey.numcmp_accept = 1; /* Flipper Dongle */'
+if numeric_confirm not in text:
+    raise SystemExit("ERROR: NimBLE numeric comparison path not found")
+text = text.replace(numeric_confirm,
+                    'indicator_pairing_code(event->passkey.params.numcmp);\n'
+                    '            ' + numeric_confirm, 1)
+
 dst.parent.mkdir(parents=True, exist_ok=True)
 dst.write_text(text, encoding="utf-8")
 print("Patched v0.4.9 strict Control/HID scanner successfully")

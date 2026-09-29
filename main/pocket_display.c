@@ -16,10 +16,13 @@
 #define LCD_RST  GPIO_NUM_14
 #define LCD_WIDTH 160
 #define LCD_HEIGHT 80
+#define SCENE_BYTES (LCD_WIDTH * LCD_HEIGHT * 2)
 
 static const char *TAG = "pocket_lcd";
 static spi_device_handle_t lcd;
 static uint16_t frame[LCD_WIDTH * LCD_HEIGHT];
+extern const uint8_t pocket_scenes_bin_start[] asm("_binary_pocket_scenes_bin_start");
+extern const uint8_t pocket_scenes_bin_end[] asm("_binary_pocket_scenes_bin_end");
 
 // Five columns per glyph, bit zero at the top. Only characters used by the
 // status screen are included; unsupported characters render as spaces.
@@ -75,82 +78,6 @@ static void line(const char *s, int x, int y, uint16_t color, int scale)
             }
         }
     }
-}
-
-static void fill_rect(int x0, int y0, int x1, int y1, uint16_t color)
-{
-    for (int y = y0; y <= y1; ++y)
-        for (int x = x0; x <= x1; ++x)
-            pixel(x, y, color);
-}
-
-static void fill_ellipse(int cx, int cy, int rx, int ry, uint16_t color)
-{
-    for (int y = -ry; y <= ry; ++y)
-        for (int x = -rx; x <= rx; ++x)
-            if (x * x * ry * ry + y * y * rx * rx <= rx * rx * ry * ry)
-                pixel(cx + x, cy + y, color);
-}
-
-static int edge(int ax, int ay, int bx, int by, int px, int py)
-{
-    return (px - ax) * (by - ay) - (py - ay) * (bx - ax);
-}
-
-static void fill_triangle(int ax, int ay, int bx, int by, int cx, int cy, uint16_t color)
-{
-    int min_x = ax < bx ? (ax < cx ? ax : cx) : (bx < cx ? bx : cx);
-    int max_x = ax > bx ? (ax > cx ? ax : cx) : (bx > cx ? bx : cx);
-    int min_y = ay < by ? (ay < cy ? ay : cy) : (by < cy ? by : cy);
-    int max_y = ay > by ? (ay > cy ? ay : cy) : (by > cy ? by : cy);
-    for (int y = min_y; y <= max_y; ++y) {
-        for (int x = min_x; x <= max_x; ++x) {
-            int e0 = edge(ax, ay, bx, by, x, y);
-            int e1 = edge(bx, by, cx, cy, x, y);
-            int e2 = edge(cx, cy, ax, ay, x, y);
-            if ((e0 >= 0 && e1 >= 0 && e2 >= 0) ||
-                (e0 <= 0 && e1 <= 0 && e2 <= 0)) pixel(x, y, color);
-        }
-    }
-}
-
-static void draw_dolphin(void)
-{
-    const uint16_t blue = 0x047f;
-    const uint16_t pale = 0xbfff;
-    fill_triangle(24, 43, 2, 28, 9, 44, blue);
-    fill_triangle(24, 43, 2, 59, 10, 44, blue);
-    fill_triangle(40, 35, 49, 17, 55, 35, blue);
-    fill_ellipse(46, 43, 31, 13, blue);
-    fill_triangle(69, 39, 88, 40, 78, 47, blue);
-    fill_triangle(47, 51, 60, 68, 56, 50, blue);
-    fill_ellipse(50, 49, 24, 6, pale);
-    fill_rect(62, 36, 64, 38, 0x0000);
-    fill_rect(77, 47, 84, 47, 0x0000);
-    fill_rect(16, 70, 33, 71, 0x047f);
-    fill_rect(42, 73, 62, 74, 0x047f);
-}
-
-static void draw_keyboard(void)
-{
-    const uint16_t rim = 0xffe0;
-    fill_rect(92, 40, 155, 69, rim);
-    fill_rect(95, 43, 152, 66, 0x18c3);
-    for (int row = 0; row < 2; ++row)
-        for (int col = 0; col < 7; ++col)
-            fill_rect(98 + col * 8, 46 + row * 8,
-                      103 + col * 8, 51 + row * 8, 0xffff);
-    fill_rect(110, 62, 139, 64, 0xffff);
-}
-
-static void draw_mouse(void)
-{
-    const uint16_t rim = 0xffe0;
-    fill_ellipse(124, 51, 17, 22, rim);
-    fill_ellipse(124, 51, 14, 19, 0x18c3);
-    fill_rect(123, 32, 125, 46, rim);
-    fill_rect(121, 39, 127, 42, 0xffff);
-    fill_rect(112, 72, 136, 73, 0x07e0);
 }
 
 static void flush_frame(void)
@@ -236,15 +163,49 @@ void pocket_display_show(const char *line1, const char *line2, const char *line3
     flush_frame();
 }
 
-void pocket_display_show_input(bool keyboard)
+static bool copy_scene(pocket_scene_t scene)
 {
-    if (!lcd) return;
-    memset(frame, 0, sizeof(frame));
-    line("CONNECTED", 4, 3, 0x07e0, 1);
-    line(keyboard ? "KEYBOARD" : "MOUSE", 101, 3, 0xffe0, 1);
-    for (int x = 0; x < LCD_WIDTH; ++x) pixel(x, 14, 0x047f);
-    draw_dolphin();
-    if (keyboard) draw_keyboard();
-    else draw_mouse();
+    if (!lcd || scene < 0 || scene >= POCKET_SCENE_COUNT) return false;
+    if ((size_t)(pocket_scenes_bin_end - pocket_scenes_bin_start) <
+        POCKET_SCENE_COUNT * SCENE_BYTES) {
+        ESP_LOGE(TAG, "Pocket scene asset is incomplete");
+        return false;
+    }
+    memcpy(frame, pocket_scenes_bin_start + scene * SCENE_BYTES, SCENE_BYTES);
+    return true;
+}
+
+void pocket_display_show_scene(pocket_scene_t scene)
+{
+    if (copy_scene(scene)) flush_frame();
+}
+
+static void draw_digit(unsigned digit, int x, int y)
+{
+    static const uint8_t columns[10][5] = {
+        {0x3e,0x51,0x49,0x45,0x3e}, {0x00,0x42,0x7f,0x40,0x00},
+        {0x42,0x61,0x51,0x49,0x46}, {0x21,0x41,0x45,0x4b,0x31},
+        {0x18,0x14,0x12,0x7f,0x10}, {0x27,0x45,0x45,0x45,0x39},
+        {0x3c,0x4a,0x49,0x49,0x30}, {0x01,0x71,0x09,0x05,0x03},
+        {0x36,0x49,0x49,0x49,0x36}, {0x06,0x49,0x49,0x29,0x1e},
+    };
+    for (int col = 0; col < 5; ++col) {
+        for (int row = 0; row < 7; ++row) {
+            if (!(columns[digit][col] & (1u << row))) continue;
+            for (int dx = 0; dx < 2; ++dx)
+                for (int dy = 0; dy < 2; ++dy)
+                    pixel(x + col * 2 + dx, y + row * 2 + dy, 0x0000);
+        }
+    }
+}
+
+void pocket_display_show_pairing_code(uint32_t code)
+{
+    if (!copy_scene(POCKET_SCENE_PAIRING)) return;
+    code %= 1000000;
+    for (int i = 5; i >= 0; --i) {
+        draw_digit(code % 10, 47 + i * 11, 56);
+        code /= 10;
+    }
     flush_frame();
 }

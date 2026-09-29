@@ -1,6 +1,10 @@
 # Changelog
 
 ## Unreleased — Pocket-Dongle bring-up
+- adapted the operator-approved dolphin montage into ten 160x80 RGB565 Pocket scenes (including derived idle art); three search frames keep the Flipper target stationary
+- connected keyboard, mouse, BadUSB, found, other-device and BLE pairing-code scenes to Pocket status events; unknown HID reports remain unforwarded, and the USB HID transport is unchanged
+- generated the pairing placard without fixed digits and draw the existing NimBLE display/numeric-comparison value at runtime
+- Pocket and Waveshare builds passed; Pocket flash write hashes verified; operator confirmed the new art, scan animation and keyboard/mouse switching after USB reconnect. BadUSB art and pairing code need separate hardware checks
 - recorded actual-board photos and esptool identification: ESP32-S3 rev. v0.2, detected 16 MB flash, reported embedded 8 MB PSRAM, USB-Serial/JTAG on COM23
 - full 16 MB factory flash backed up outside Git; USB HID and peripheral pin verification remain pending; firmware unchanged
 - recorded the operator's tentative identification of the red component as an antenna; LED presence remains unverified

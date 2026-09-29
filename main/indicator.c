@@ -12,10 +12,12 @@ static indicator_state_t current = -1;
 #ifdef POCKET_DONGLE
 static QueueHandle_t display_queue;
 static indicator_input_t current_input;
+static bool badusb_source;
 
 typedef struct {
     indicator_state_t state;
     indicator_input_t input;
+    uint32_t code;
 } display_message_t;
 
 static void display_task(void *arg)
@@ -26,21 +28,40 @@ static void display_task(void *arg)
         ESP_LOGE(TAG, "Pocket display init failed: %s", esp_err_to_name(err));
         vTaskDelete(NULL);
     }
-    display_message_t message;
-    while (xQueueReceive(display_queue, &message, portMAX_DELAY) == pdTRUE) {
-        if (message.state == IND_CONNECTED && message.input != IND_INPUT_NONE) {
-            pocket_display_show_input(message.input == IND_INPUT_KEYBOARD);
+    display_message_t message = {.state = IND_BOOT};
+    unsigned scan_frame = 0;
+    while (1) {
+        const TickType_t wait = message.state == IND_SCANNING
+                                    ? pdMS_TO_TICKS(350) : portMAX_DELAY;
+        display_message_t next;
+        if (xQueueReceive(display_queue, &next, wait) == pdTRUE) {
+            message = next;
+            scan_frame = 0;
+        } else if (message.state == IND_SCANNING) {
+            scan_frame = (scan_frame + 1) % 3;
+        }
+        if (message.state == IND_CONNECTED) {
+            pocket_scene_t scene = POCKET_SCENE_FOUND;
+            if (message.input == IND_INPUT_KEYBOARD) scene = POCKET_SCENE_KEYBOARD;
+            else if (message.input == IND_INPUT_MOUSE) scene = POCKET_SCENE_MOUSE;
+            else if (message.input == IND_INPUT_OTHER) scene = POCKET_SCENE_OTHER;
+            else if (message.input == IND_INPUT_BADUSB) scene = POCKET_SCENE_BADUSB;
+            pocket_display_show_scene(scene);
             continue;
         }
         switch (message.state) {
-        case IND_BOOT:         pocket_display_show("BOOT", "STARTING BLE AND USB", "WAIT"); break;
-        case IND_IDLE:         pocket_display_show("IDLE", "PRESS BOOT TO PAIR", "WAITING"); break;
-        case IND_SCANNING:     pocket_display_show("SCANNING", "SEARCHING BLE HID", "WAIT"); break;
-        case IND_FOUND:        pocket_display_show("FOUND", "FLIPPER HID SEEN", "OPENING"); break;
-        case IND_CONNECTING:   pocket_display_show("CONNECTING", "BLE SESSION OPEN", "WAIT INPUT"); break;
-        case IND_CONNECTED:    pocket_display_show("CONNECTED", "HID REPORT RECEIVED", "USB QUEUED"); break;
-        case IND_DISCONNECTED: pocket_display_show("NO HID", "NO BLE CONNECTION", "PRESS BOOT"); break;
-        case IND_PAIR_RESET:   pocket_display_show("RESET", "BLE BONDS CLEARED", "PRESS BOOT"); break;
+        case IND_BOOT:
+        case IND_IDLE:
+        case IND_DISCONNECTED:
+        case IND_PAIR_RESET:
+            pocket_display_show_scene(POCKET_SCENE_IDLE); break;
+        case IND_SCANNING:
+            pocket_display_show_scene(POCKET_SCENE_SCAN_1 + scan_frame); break;
+        case IND_FOUND:
+        case IND_CONNECTING:
+            pocket_display_show_scene(POCKET_SCENE_FOUND); break;
+        case IND_PAIRING_CODE:
+            pocket_display_show_pairing_code(message.code); break;
         default:               pocket_display_show("ERROR", "CHECK SERIAL LOG", "RETRY"); break;
         }
     }
@@ -58,6 +79,7 @@ static const char *state_name(indicator_state_t s)
     case IND_CONNECTED:    return "CONNECTED";
     case IND_DISCONNECTED: return "DISCONNECTED";
     case IND_PAIR_RESET:   return "PAIR RESET";
+    case IND_PAIRING_CODE: return "PAIRING CODE";
     case IND_ERROR:        return "ERROR";
     default:               return "ERROR";
     }
@@ -68,6 +90,7 @@ void indicator_init(void)
     current = -1;
 #ifdef POCKET_DONGLE
     current_input = IND_INPUT_NONE;
+    badusb_source = false;
     display_queue = xQueueCreate(1, sizeof(display_message_t));
     if (display_queue) {
         if (xTaskCreate(display_task, "pocket_display", 4096, NULL, 2, NULL) != pdPASS) {
@@ -99,6 +122,7 @@ void indicator_set(indicator_state_t state)
 void indicator_input(indicator_input_t input)
 {
 #ifdef POCKET_DONGLE
+    if (badusb_source) input = IND_INPUT_BADUSB;
     if (current != IND_CONNECTED || input == IND_INPUT_NONE ||
         input == current_input || !display_queue) return;
     current_input = input;
@@ -106,5 +130,31 @@ void indicator_input(indicator_input_t input)
     (void)xQueueOverwrite(display_queue, &message);
 #else
     (void)input;
+#endif
+}
+
+void indicator_source_badusb(bool enabled)
+{
+#ifdef POCKET_DONGLE
+    badusb_source = enabled;
+#else
+    (void)enabled;
+#endif
+}
+
+void indicator_pairing_code(uint32_t code)
+{
+#ifdef POCKET_DONGLE
+    current = IND_PAIRING_CODE;
+    current_input = IND_INPUT_NONE;
+    ESP_LOGI(TAG, "=== PAIRING CODE ===");
+    if (display_queue) {
+        display_message_t message = {
+            .state = IND_PAIRING_CODE, .input = IND_INPUT_NONE, .code = code,
+        };
+        (void)xQueueOverwrite(display_queue, &message);
+    }
+#else
+    (void)code;
 #endif
 }

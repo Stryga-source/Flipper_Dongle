@@ -60,6 +60,8 @@ The experimental Pocket bridge has since built and flashed. Windows enumerated i
 
 UI follow-up: the user requested a dolphin holding a keyboard or mouse on the Pocket screen. A new build now draws a compact dolphin scene and selects the keyboard or mouse icon from the last successfully queued HID report. It redraws only when the report kind changes. Pocket and Waveshare builds pass. After the operator entered BOOT mode, the Pocket image was flashed with a verified write hash and the app re-enumerated as USB HID keyboard/mouse plus CDC COM22. Physical confirmation of both drawings is pending.
 
+New approved screen pack (2026-09-29): nine operator-approved scenes were adapted from the supplied montage to 160x80 RGB565 and integrated on `codex/pocket-screen-scenes`; a derived idle dolphin is the tenth frame. Pocket and Waveshare build. The Pocket image was written to COM23 with hash verification, then booted after a BOOT-free USB reconnect. The operator confirmed new pictures, scan animation, and keyboard/mouse scene switching; Windows exposed CDC COM22. BadUSB scene, the six-digit pairing placard, and the other-device scene still need separate confirmation. Joystick art is a visual marker for an unrecognized HID report; joystick USB forwarding is not implemented.
+
 ### Deliverables
 
 - update `docs/hardware/T_DONGLE_CLONE.md`

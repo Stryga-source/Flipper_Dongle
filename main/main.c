@@ -171,6 +171,11 @@ static void hidh_callback(void *handler_args, esp_event_base_t base,
             s_connected = true;
             s_pair_scan_requested = false;
 
+            const char *name = esp_hidh_dev_name_get(p->open.dev);
+            indicator_source_badusb(name &&
+                (strncmp(name, "BadUSB", 6) == 0 ||
+                 strncmp(name, "BadKB", 5) == 0));
+
             (void)refresh_bond_state();
             s_auto_reconnect = true;
 
@@ -227,12 +232,17 @@ static void hidh_callback(void *handler_args, esp_event_base_t base,
         } else {
             ESP_LOGI(TAG, "Ignoring HID report: usage=%d id=%u len=%u",
                      p->input.usage, p->input.report_id, hid_len);
+            if (s_connected) {
+                indicator_set(IND_CONNECTED);
+                indicator_input(IND_INPUT_OTHER);
+            }
         }
         break;
     }
 
     case ESP_HIDH_CLOSE_EVENT:
         queue_release_all();
+        indicator_source_badusb(false);
         s_current_dev = NULL;
         s_connected = false;
         s_pair_scan_requested = false;
@@ -362,7 +372,6 @@ static void scan_and_connect_task(void *arg)
                 ESP_LOGI(TAG, "Opening BLE HID: %s (%s)",
                          best->name ? best->name : "(no name)",
                          pair_now ? "pairing" : "bonded reconnect");
-                indicator_set(IND_CONNECTING);
                 esp_hidh_dev_open(best->bda, best->transport, best->ble.addr_type);
             } else if (pair_now) {
                 indicator_set(IND_DISCONNECTED);

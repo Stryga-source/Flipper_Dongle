@@ -21,8 +21,10 @@ endif()
 message(STATUS "${PATCH_OUTPUT}")
 
 set(BOARD_DISPLAY_SOURCE "")
+set(BOARD_EMBED_FILES "")
 if(POCKET_DONGLE)
     set(BOARD_DISPLAY_SOURCE "pocket_display.c")
+    set(BOARD_EMBED_FILES "pocket_scenes.bin")
 endif()
 
 idf_component_register(
@@ -41,6 +43,8 @@ idf_component_register(
         esp_hid
         bt
         nvs_flash
+    EMBED_FILES
+        ${BOARD_EMBED_FILES}
 )
 
 if(POCKET_DONGLE)

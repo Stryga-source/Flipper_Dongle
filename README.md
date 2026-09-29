@@ -113,7 +113,11 @@ idf.py -B build-pocket -DPOCKET_DONGLE=ON -p COM23 flash
 
 The Pocket profile uses `sdkconfig.pocket.defaults` and an independent generated `sdkconfig.pocket` with the measured 16 MB flash size. The display shows BLE states such as `SCANNING`, `CONNECTING`, `CONNECTED`, and `NO HID`. After flashing, the debug CDC interface appeared as COM22 on the tested PC; COM numbering can change. Keyboard and mouse input worked in the first operator test. This remains an experimental build until repeated pairing/reset behavior is verified on hardware.
 
-The Pocket display shows a small dolphin alongside a keyboard or mouse when connected. The icon follows the most recent keyboard or mouse HID report. This revision was flashed successfully and USB HID enumerated again; the two drawings still need visual confirmation on the board.
+The experimental Pocket screen now uses full-screen 160x80 RGB565 dolphin scenes based on the operator-approved references. It cycles three search frames, keeps the Flipper target fixed during that animation, shows a found scene, and switches to keyboard or mouse art after the corresponding USB HID report is queued. BadUSB uses its own art based on the connected BLE identity. An unrecognized HID report shows joystick/other-device art but is **not** forwarded as a USB joystick.
+
+For BLE display-passkey or numeric-comparison events, the six digits are drawn on the placard held by the dolphin. The image asset itself contains no fixed PIN. The current project-local NimBLE helper uses `123456` for its display-passkey action; numeric comparison uses the BLE event value. This UI change does not alter the pairing policy.
+
+The new Pocket image was flashed with verified write hashes. After reconnecting without BOOT, the operator confirmed the new art, three-frame search animation, and keyboard/mouse switching on the physical screen; Windows again exposed CDC COM22. BadUSB art and pairing-code behavior on this new build have not yet been confirmed separately. Waveshare still builds from the same source tree.
 
 ## Version status
 
