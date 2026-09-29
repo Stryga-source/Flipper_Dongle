@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased — Public repository preparation
+## 2026-09-29 — Public repository launch
+- published the MIT-licensed repository and both firmware releases with a
+  Git history using GitHub noreply commit addresses
+- preserved the original development history in a private archive; public
+  commit IDs differ, while source trees and release binary hashes match
 - added the MIT license with the original repository link in the retained
   copyright notice
 - clarified the tested Pocket release versus the hardware-untested LILYGO

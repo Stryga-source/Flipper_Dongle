@@ -1,7 +1,7 @@
 # Pocket-Dongle-S3-0.96 HID — 2026-09-29
 
-Hardware-tested Pocket-Dongle build from `main` at `b9a5433`. This is the
-ESP32-S3 board marked `Pocket-Dongle-S3-0.96` with 16 MB flash and the 160x80
+Hardware-tested Pocket-Dongle build from the source tree tagged
+`pocket-hid-2026-09-29`. This is the ESP32-S3 board marked `Pocket-Dongle-S3-0.96` with 16 MB flash and the 160x80
 screen. It is not an original LILYGO T-Dongle. The `v0.5.6-test-candidate`
 pairing change is not included.
 

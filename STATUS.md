@@ -2,10 +2,13 @@
 
 Last updated: 2026-09-29
 
-Both GitHub releases are present with separate Pocket and LILYGO binaries.
-The original LILYGO profile is on `codex/lilygo-board-profile`, not in `main`,
-and remains hardware-untested. Repository visibility and licensing are
-separate decisions.
+The repository is public at `Stryga-source/Flipper_Dongle` under MIT.
+Both GitHub releases have separate Pocket and LILYGO binaries. The original
+LILYGO profile is on `codex/lilygo-board-profile`, not in `main`, and
+remains hardware-untested. The pre-publication Git history is retained
+privately; public commit IDs changed when personal commit-email metadata was
+replaced with GitHub noreply addresses. Source trees and release binary
+SHA-256 values are unchanged.
 
 Planned only: investigate a cable-like Flipper-to-PC connection through the
 dongle, initially interpreted as qFlipper access. The current firmware remains

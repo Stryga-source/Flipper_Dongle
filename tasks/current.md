@@ -1,5 +1,8 @@
 # Current Tasks — Flipper Dongle
 
+The public repository and both firmware releases are online. Publication did
+not change firmware behavior or complete the remaining hardware checks.
+
 The tested Pocket HID build has a ready-to-flash package documented in
 `docs/releases/POCKET_HID_20260929.md`: full image at `0x0`, application-only
 update at `0x10000`. Packaging does not close the remaining hardware checks.
