@@ -2,6 +2,9 @@
 
 [English](README.md) · [Релиз прошивки Pocket](https://github.com/stryginuv/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29) · [Инструкция по прошивке](docs/releases/POCKET_HID_20260929.md)
 
+Проект распространяется по [лицензии MIT](LICENSE). При распространении копий
+сохраняйте текст лицензии со ссылкой на [исходный репозиторий](https://github.com/stryginuv/Flipper_Dongle).
+
 Flipper Dongle — отдельный USB-адаптер на ESP32-S3, который превращает Bluetooth HID-профили Flipper Zero в обычную USB-клавиатуру и мышь для ПК.
 
 На компьютере не нужны драйвер, отдельная программа или специальное приложение для Flipper. Донгл работает как BLE HID Host со стороны Flipper и как стандартное USB HID-устройство со стороны компьютера.

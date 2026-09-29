@@ -2,6 +2,10 @@
 
 [Русская версия](README_RU.md) · [Pocket firmware release](https://github.com/stryginuv/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29) · [Flashing guide](docs/releases/POCKET_HID_20260929.md)
 
+Licensed under [MIT](LICENSE). Keep the license notice, including the link to
+the [original repository](https://github.com/stryginuv/Flipper_Dongle), when
+redistributing the project.
+
 Flipper Dongle is a standalone ESP32-S3 USB adapter that turns Flipper Zero Bluetooth HID profiles into a standard USB keyboard and mouse for a PC.
 
 The PC does not need a driver, companion application, or custom Flipper application. The dongle acts as a BLE HID host on the Flipper side and as a standard USB HID device on the computer side.

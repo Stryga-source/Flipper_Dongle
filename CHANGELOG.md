@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased — Public repository preparation
+- added the MIT license with the original repository link in the retained
+  copyright notice
 - clarified the tested Pocket release versus the hardware-untested LILYGO
   pre-release, and linked both from the README
 - corrected portable ESP-IDF build instructions and the current branch workflow
