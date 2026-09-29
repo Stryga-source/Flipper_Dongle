@@ -6,8 +6,9 @@ Status: **MCU/memory identified; display SPI and BOOT GPIO0 verified; USB HID ke
 approved montage was built for this board and flashed on COM23 with verified
 write hashes. After a BOOT-free USB reconnect the operator saw the new art and
 confirmed the three-frame scan and keyboard/mouse scene changes. CDC COM22
-(`303A:4005`) enumerated again. BadUSB art and the dynamic pairing-code
-placard have not been separately tested on hardware. This does not establish
+(`303A:4005`) enumerated again. The operator subsequently confirmed BadUSB
+operation, with CDC logs showing its BLE HID connection and USB reports.
+The dynamic pairing-code placard has not been tested on hardware. This does not establish
 the microSD pinout or a backlight-control GPIO.
 
 This board was initially described as a non-original T-Dongle-style device. User photos now identify the PCB silkscreen as:

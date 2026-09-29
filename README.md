@@ -117,7 +117,7 @@ The experimental Pocket screen now uses full-screen 160x80 RGB565 dolphin scenes
 
 For BLE display-passkey or numeric-comparison events, the six digits are drawn on the placard held by the dolphin. The image asset itself contains no fixed PIN. The current project-local NimBLE helper uses `123456` for its display-passkey action; numeric comparison uses the BLE event value. This UI change does not alter the pairing policy.
 
-The new Pocket image was flashed with verified write hashes. After reconnecting without BOOT, the operator confirmed the new art, three-frame search animation, and keyboard/mouse switching on the physical screen; Windows again exposed CDC COM22. BadUSB art and pairing-code behavior on this new build have not yet been confirmed separately. Waveshare still builds from the same source tree.
+The new Pocket image was flashed with verified write hashes. After reconnecting without BOOT, the operator confirmed the new art, three-frame search animation, keyboard/mouse switching and BadUSB operation; Windows again exposed CDC COM22. The pairing-code screen has not yet been confirmed on hardware. Waveshare still builds from the same source tree.
 
 ## Version status
 
