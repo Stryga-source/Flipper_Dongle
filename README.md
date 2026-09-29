@@ -32,6 +32,11 @@ The non-original `Pocket-Dongle-S3-0.96` is a working USB HID target. esptool de
 
 A separate diagnostic passed a 64 KiB PSRAM write/read test. The board has no physical HID/DRIVE switch. The Pocket build is selected at build time, leaving the Waveshare configuration intact.
 
+An original LILYGO T-Dongle-S3 has its own **build-tested, hardware-untested**
+profile. Its display pins differ from Pocket's. See the
+[LILYGO board notes](docs/hardware/LILYGO_T_DONGLE_S3.md); the Pocket release
+binary must not be used for this board.
+
 Development stack:
 - ESP-IDF 6.1
 - NimBLE
@@ -118,6 +123,16 @@ idf.py -B build-pocket -DPOCKET_DONGLE=ON -p COM23 flash
 ```
 
 The Pocket profile uses `sdkconfig.pocket.defaults` and an independent generated `sdkconfig.pocket` with the measured 16 MB flash size. After flashing, the debug CDC interface appeared as COM22 on the tested PC; COM numbering can change. The operator considers this HID target working. Pairing/reset stress tests, microSD and the PIN placard still need separate verification.
+
+Original LILYGO T-Dongle-S3 build candidate:
+
+```powershell
+idf.py -B build-lilygo -DLILYGO_T_DONGLE_S3=ON build
+```
+
+It uses `sdkconfig.lilygo.defaults` and `sdkconfig.lilygo`. Pocket, Waveshare,
+and LILYGO configurations compile; LILYGO has not been flashed or tested on a
+physical board. Different LILYGO models/revisions need their own profile.
 
 The Pocket screen uses full-screen 160x80 RGB565 dolphin scenes based on the operator-approved references. It cycles three search frames, keeps the Flipper target fixed during that animation, shows a found scene, and switches to keyboard or mouse art after the corresponding USB HID report is queued. BadUSB uses its own art based on the connected BLE identity. An unrecognized HID report shows joystick/other-device art but is **not** forwarded as a USB joystick.
 

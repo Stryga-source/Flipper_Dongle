@@ -6,6 +6,8 @@
 /sdkconfig.old
 /sdkconfig.pocket
 /sdkconfig.pocket.old
+/sdkconfig.lilygo
+/sdkconfig.lilygo.old
 /dependencies.lock
 /build-*.log
 /flash-*.log

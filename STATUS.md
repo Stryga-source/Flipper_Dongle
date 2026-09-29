@@ -2,6 +2,10 @@
 
 Last updated: 2026-09-29
 
+Original LILYGO T-Dongle-S3: a separate vendor-pin-based profile now builds,
+alongside Pocket and Waveshare. It is a build-only test candidate with no
+LILYGO hardware validation; see `docs/hardware/LILYGO_T_DONGLE_S3.md`.
+
 Planned only: investigate a cable-like Flipper-to-PC connection through the
 dongle, initially interpreted as qFlipper access. The current firmware remains
 a BLE HID-to-USB HID bridge; its CDC port is for dongle logs. See

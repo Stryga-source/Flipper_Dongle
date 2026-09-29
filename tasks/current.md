@@ -106,10 +106,14 @@ After Pocket-Dongle verification, refactor board-specific pins/peripherals so bo
 
 - Waveshare ESP32-S3-LCD-1.47
 - Pocket-Dongle-S3-0.96
+- original LILYGO T-Dongle-S3 (build-only candidate; needs a tester)
 
 Keep BLE HID core shared.
 
 Prefer build-time board selection instead of scattered `#ifdef` pin definitions.
+The first LILYGO profile has a separate generated sdkconfig and display-pin
+header. Pocket, Waveshare, and LILYGO builds pass; hardware verification of
+LILYGO remains open. See `docs/hardware/LILYGO_T_DONGLE_S3.md`.
 
 ---
 

@@ -110,6 +110,13 @@ Before porting firmware to this target:
 
 Do not break the Waveshare build while adding Pocket-Dongle support.
 
+### Build-only candidate — original LILYGO T-Dongle-S3
+
+The original LILYGO is a separate board profile with vendor-documented display
+pins. It builds but has not been tested on hardware. See
+`docs/hardware/LILYGO_T_DONGLE_S3.md`. Do not mark it verified or substitute
+the Pocket release image for it.
+
 ## USB product plan
 
 During development:

@@ -1,6 +1,6 @@
 #include "indicator.h"
 #include "esp_log.h"
-#ifdef POCKET_DONGLE
+#ifdef BOARD_SCENE_DISPLAY
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
@@ -9,7 +9,7 @@
 
 static const char *TAG = "FD_STATUS";
 static indicator_state_t current = -1;
-#ifdef POCKET_DONGLE
+#ifdef BOARD_SCENE_DISPLAY
 static QueueHandle_t display_queue;
 static indicator_input_t current_input;
 static bool badusb_source;
@@ -25,7 +25,7 @@ static void display_task(void *arg)
     (void)arg;
     const esp_err_t err = pocket_display_init();
     if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Pocket display init failed: %s", esp_err_to_name(err));
+        ESP_LOGE(TAG, "Scene display init failed: %s", esp_err_to_name(err));
         vTaskDelete(NULL);
     }
     display_message_t message = {.state = IND_BOOT};
@@ -88,7 +88,7 @@ static const char *state_name(indicator_state_t s)
 void indicator_init(void)
 {
     current = -1;
-#ifdef POCKET_DONGLE
+#ifdef BOARD_SCENE_DISPLAY
     current_input = IND_INPUT_NONE;
     badusb_source = false;
     display_queue = xQueueCreate(1, sizeof(display_message_t));
@@ -110,7 +110,7 @@ void indicator_set(indicator_state_t state)
     if (state == current) return;
     current = state;
     ESP_LOGI(TAG, "=== %s ===", state_name(state));
-#ifdef POCKET_DONGLE
+#ifdef BOARD_SCENE_DISPLAY
     if (state != IND_CONNECTED) current_input = IND_INPUT_NONE;
     if (display_queue) {
         display_message_t message = {.state = state, .input = current_input};
@@ -121,7 +121,7 @@ void indicator_set(indicator_state_t state)
 
 void indicator_input(indicator_input_t input)
 {
-#ifdef POCKET_DONGLE
+#ifdef BOARD_SCENE_DISPLAY
     if (badusb_source) input = IND_INPUT_BADUSB;
     if (current != IND_CONNECTED || input == IND_INPUT_NONE ||
         input == current_input || !display_queue) return;
@@ -135,7 +135,7 @@ void indicator_input(indicator_input_t input)
 
 void indicator_source_badusb(bool enabled)
 {
-#ifdef POCKET_DONGLE
+#ifdef BOARD_SCENE_DISPLAY
     badusb_source = enabled;
 #else
     (void)enabled;
@@ -144,7 +144,7 @@ void indicator_source_badusb(bool enabled)
 
 void indicator_pairing_code(uint32_t code)
 {
-#ifdef POCKET_DONGLE
+#ifdef BOARD_SCENE_DISPLAY
     current = IND_PAIRING_CODE;
     current_input = IND_INPUT_NONE;
     ESP_LOGI(TAG, "=== PAIRING CODE ===");

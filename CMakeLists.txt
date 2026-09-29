@@ -5,11 +5,18 @@ if(NOT DEFINED IDF_TARGET)
     set(IDF_TARGET "esp32s3")
 endif()
 
-# The Pocket experiment uses its own generated sdkconfig and the actual 16 MB
-# flash size; the Waveshare configuration remains in sdkconfig.
+if(POCKET_DONGLE AND LILYGO_T_DONGLE_S3)
+    message(FATAL_ERROR "Select only one dongle board profile")
+endif()
+
+# Each dongle has its own generated sdkconfig; the Waveshare configuration
+# remains in sdkconfig.
 if(POCKET_DONGLE)
     set(SDKCONFIG "${CMAKE_CURRENT_LIST_DIR}/sdkconfig.pocket")
     set(SDKCONFIG_DEFAULTS "sdkconfig.defaults;sdkconfig.pocket.defaults")
+elseif(LILYGO_T_DONGLE_S3)
+    set(SDKCONFIG "${CMAKE_CURRENT_LIST_DIR}/sdkconfig.lilygo")
+    set(SDKCONFIG_DEFAULTS "sdkconfig.defaults;sdkconfig.lilygo.defaults")
 endif()
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
