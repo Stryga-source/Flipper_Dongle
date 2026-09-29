@@ -93,6 +93,12 @@ A later milestone will merge the working BLE HID bridge with the previously test
 
 ## Build
 
+For the hardware-tested Pocket-Dongle, download the ready-to-flash full or
+application-only binary from the [Pocket HID release](https://github.com/stryginuv/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29).
+The [flashing guide](docs/releases/POCKET_HID_20260929.md) gives the exact
+addresses and explains when an update preserves BLE bonds. These binaries are
+for the `Pocket-Dongle-S3-0.96` with 16 MB flash, not the Waveshare board.
+
 Windows PowerShell:
 
 ```powershell

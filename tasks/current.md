@@ -1,5 +1,9 @@
 # Current Tasks — Flipper Dongle
 
+The tested Pocket HID build has a ready-to-flash package documented in
+`docs/releases/POCKET_HID_20260929.md`: full image at `0x0`, application-only
+update at `0x10000`. Packaging does not close the remaining hardware checks.
+
 ## Priority 0 — Preserve the working baseline
 
 Keep `main` working and preserve `v0.5.5-first-test` as the first-test rollback point.

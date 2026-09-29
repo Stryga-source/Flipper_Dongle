@@ -91,6 +91,12 @@ v0.5.5 хранит до 4 BLE HID bond-профилей.
 
 ## Сборка
 
+Готовые бинарники для проверенного `Pocket-Dongle-S3-0.96` доступны в
+[релизе Pocket HID](https://github.com/stryginuv/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29).
+В [инструкции по прошивке](docs/releases/POCKET_HID_20260929.md) указаны
+адреса записи и пояснено, какой вариант сохраняет BLE-сопряжения. Эти файлы
+рассчитаны на Pocket с flash 16 МБ, а не на плату Waveshare.
+
 Windows PowerShell:
 
 ```powershell

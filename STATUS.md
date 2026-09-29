@@ -2,6 +2,11 @@
 
 Last updated: 2026-09-29
 
+Pocket HID release package: `pocket-hid-2026-09-29` provides a full image
+for offset `0x0` and an application-only update for offset `0x10000`.
+See `docs/releases/POCKET_HID_20260929.md` for hashes and flashing steps.
+The package uses the hardware-tested `main` behavior and still exposes CDC.
+
 ## Overall
 
 The BLE HID -> USB HID bridge is working on both Waveshare and Pocket-Dongle.

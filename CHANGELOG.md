@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased — Pocket-Dongle bring-up
+- packaged the hardware-tested Pocket build as a single-image first-install binary and an application-only update binary; documented flash addresses, bond erasure, and SHA-256 checksums for the `pocket-hid-2026-09-29` GitHub release
 - operator accepted the Pocket HID dongle as working; preserved `v0.5.5-first-test` as rollback, integrated the tested Pocket branch into `main`, and replaced an incomplete reference ZIP with the full approved montage
 - adapted the operator-approved dolphin montage into ten 160x80 RGB565 Pocket scenes (including derived idle art); three search frames keep the Flipper target stationary
 - connected keyboard, mouse, BadUSB, found, other-device and BLE pairing-code scenes to Pocket status events; unknown HID reports remain unforwarded, and the USB HID transport is unchanged
