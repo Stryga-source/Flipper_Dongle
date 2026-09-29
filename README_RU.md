@@ -1,9 +1,9 @@
 # Flipper Dongle
 
-[English](README.md) · [Релиз прошивки Pocket](https://github.com/stryginuv/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29) · [Инструкция по прошивке](docs/releases/POCKET_HID_20260929.md)
+[English](README.md) · [Релиз прошивки Pocket](https://github.com/Stryga-source/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29) · [Инструкция по прошивке](docs/releases/POCKET_HID_20260929.md)
 
 Проект распространяется по [лицензии MIT](LICENSE). При распространении копий
-сохраняйте текст лицензии со ссылкой на [исходный репозиторий](https://github.com/stryginuv/Flipper_Dongle).
+сохраняйте текст лицензии со ссылкой на [исходный репозиторий](https://github.com/Stryga-source/Flipper_Dongle).
 
 Flipper Dongle — отдельный USB-адаптер на ESP32-S3, который превращает Bluetooth HID-профили Flipper Zero в обычную USB-клавиатуру и мышь для ПК.
 
@@ -40,7 +40,7 @@ v0.5.6 исправляет гонку состояний при сбросе с
 Неоригинальный `Pocket-Dongle-S3-0.96` — рабочий USB HID-таргет. На фактической плате esptool обнаружил ESP32-S3, flash 16 МБ и встроенную PSRAM 8 МБ. Полный образ заводской flash сохранён вне Git. Пользователь подтвердил работу клавиатуры и мыши через Flipper Bluetooth Remote, BadUSB и сцен на экране 160×80. Кнопка BOOT проверена на GPIO0. Распиновка microSD и наличие отдельного статусного LED пока не проверены. У донгла нет физического переключателя HID/DRIVE; подробности в `docs/hardware/T_DONGLE_CLONE.md`.
 
 Для оригинального LILYGO T-Dongle-S3 опубликован отдельный [тестовый релиз без
-проверки на плате](https://github.com/stryginuv/Flipper_Dongle/releases/tag/lilygo-t-dongle-s3-test-2026-09-29)
+проверки на плате](https://github.com/Stryga-source/Flipper_Dongle/releases/tag/lilygo-t-dongle-s3-test-2026-09-29)
 из ветки `codex/lilygo-board-profile`. Этого профиля нет в `main`;
 LILYGO-бинарник не подходит для Pocket и Waveshare.
 
@@ -106,7 +106,7 @@ v0.5.5 хранит до 4 BLE HID bond-профилей.
 ## Сборка
 
 Готовые бинарники для проверенного `Pocket-Dongle-S3-0.96` доступны в
-[релизе Pocket HID](https://github.com/stryginuv/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29).
+[релизе Pocket HID](https://github.com/Stryga-source/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29).
 В [инструкции по прошивке](docs/releases/POCKET_HID_20260929.md) указаны
 адреса записи и пояснено, какой вариант сохраняет BLE-сопряжения. Эти файлы
 рассчитаны на Pocket с flash 16 МБ, а не на плату Waveshare.

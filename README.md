@@ -1,9 +1,9 @@
 # Flipper Dongle
 
-[Русская версия](README_RU.md) · [Pocket firmware release](https://github.com/stryginuv/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29) · [Flashing guide](docs/releases/POCKET_HID_20260929.md)
+[Русская версия](README_RU.md) · [Pocket firmware release](https://github.com/Stryga-source/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29) · [Flashing guide](docs/releases/POCKET_HID_20260929.md)
 
 Licensed under [MIT](LICENSE). Keep the license notice, including the link to
-the [original repository](https://github.com/stryginuv/Flipper_Dongle), when
+the [original repository](https://github.com/Stryga-source/Flipper_Dongle), when
 redistributing the project.
 
 Flipper Dongle is a standalone ESP32-S3 USB adapter that turns Flipper Zero Bluetooth HID profiles into a standard USB keyboard and mouse for a PC.
@@ -42,7 +42,7 @@ The non-original `Pocket-Dongle-S3-0.96` is a working USB HID target. esptool de
 
 A separate diagnostic passed a 64 KiB PSRAM write/read test. The board has no physical HID/DRIVE switch. The Pocket build is selected at build time, leaving the Waveshare configuration intact.
 
-An original LILYGO T-Dongle-S3 has a separate [hardware-untested pre-release](https://github.com/stryginuv/Flipper_Dongle/releases/tag/lilygo-t-dongle-s3-test-2026-09-29)
+An original LILYGO T-Dongle-S3 has a separate [hardware-untested pre-release](https://github.com/Stryga-source/Flipper_Dongle/releases/tag/lilygo-t-dongle-s3-test-2026-09-29)
 from the `codex/lilygo-board-profile` branch. Its profile is not in `main` and
 its image must not be flashed to the Pocket or Waveshare board.
 
@@ -108,7 +108,7 @@ A later milestone will merge the working BLE HID bridge with the previously test
 ## Build
 
 For the hardware-tested Pocket-Dongle, download the ready-to-flash full or
-application-only binary from the [Pocket HID release](https://github.com/stryginuv/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29).
+application-only binary from the [Pocket HID release](https://github.com/Stryga-source/Flipper_Dongle/releases/tag/pocket-hid-2026-09-29).
 The [flashing guide](docs/releases/POCKET_HID_20260929.md) gives the exact
 addresses and explains when an update preserves BLE bonds. These binaries are
 for the `Pocket-Dongle-S3-0.96` with 16 MB flash, not the Waveshare board.

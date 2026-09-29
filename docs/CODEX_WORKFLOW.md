@@ -2,7 +2,7 @@
 
 ## Starting a session
 
-1. Open/clone `stryginuv/Flipper_Dongle`.
+1. Open/clone `Stryga-source/Flipper_Dongle`.
 2. Read `AGENTS.md` completely.
 3. Read `STATUS.md`.
 4. Read `tasks/current.md`.
