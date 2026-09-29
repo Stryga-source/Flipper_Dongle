@@ -1,4 +1,5 @@
 #include "pocket_display.h"
+#include "board_display_pins.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -9,11 +10,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#define LCD_SCLK GPIO_NUM_10
-#define LCD_MOSI GPIO_NUM_11
-#define LCD_CS   GPIO_NUM_12
-#define LCD_DC   GPIO_NUM_13
-#define LCD_RST  GPIO_NUM_14
 #define LCD_WIDTH 160
 #define LCD_HEIGHT 80
 #define SCENE_BYTES (LCD_WIDTH * LCD_HEIGHT * 2)

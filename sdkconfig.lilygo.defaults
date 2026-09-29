@@ -1,0 +1,3 @@
+# Published original LILYGO T-Dongle-S3 profile: 16 MB flash.
+# PSRAM varies by revision; leave it disabled until real-board identification.
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
