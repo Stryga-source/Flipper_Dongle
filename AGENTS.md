@@ -13,7 +13,7 @@ Before changing code, read in this order:
 5. relevant release notes in `docs/`
 6. `docs/hardware/T_DONGLE_CLONE.md` before any Pocket-Dongle hardware work
 
-If chat history and repository documentation disagree, prefer the repository state unless the user explicitly overrides it.
+If chat history and repository documentation disagree, prefer the repository state unless explicitly overridden.
 
 ## Project goal
 
@@ -26,12 +26,12 @@ The PC should require no custom driver or companion application.
 ## Version baselines
 
 - `v0.5.5-first-test` = preserved first hardware-tested baseline.
-- `main` = working HID core plus operator-tested Pocket-Dongle keyboard,
+- `main` = working HID core plus hardware-tested Pocket-Dongle keyboard,
   mouse, BadUSB and display scenes. Keep the original baseline available.
 - `v0.5.6-test-candidate` = pairing/reset race-fix candidate awaiting hardware verification.
 - Never rewrite or destructively modify the known-good baseline.
 - Make incremental, versioned changes.
-- Do not promote a candidate until the user confirms hardware testing.
+- Do not promote a candidate until hardware verification is complete.
 
 ## Known-good behavior
 
@@ -92,7 +92,7 @@ The newly arrived T-Dongle-like board has been visually identified from the actu
 
 This is **not an original LILYGO T-Dongle-S3**. Do not use LILYGO pin assignments by assumption.
 
-A matching public Pocket-Dongle-S3 reference exists and candidate display/microSD pins are recorded in `docs/hardware/T_DONGLE_CLONE.md`. Those values remain **REFERENCE** until tested on the user's exact board.
+A matching public Pocket-Dongle-S3 reference exists and candidate display/microSD pins are recorded in `docs/hardware/T_DONGLE_CLONE.md`. Those values remain **REFERENCE** until tested on the target board.
 
 Before porting firmware to this target:
 
@@ -133,4 +133,4 @@ Later, after BLE HID and pairing are stable:
 - Preserve working versions before experiments.
 - Update `STATUS.md` and `tasks/current.md` when work materially changes project state.
 - Keep README EN/RU aligned for user-facing changes.
-- Hardware behavior must be labeled `tested` only after explicit user confirmation.
+- Hardware behavior must be labeled `tested` only after hardware verification is complete.
