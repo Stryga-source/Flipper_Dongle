@@ -28,9 +28,9 @@ v0.5.6 adds a pairing-state race-condition fix. It is not yet promoted to the fi
 Primary development board:
 - Waveshare ESP32-S3-LCD-1.47
 
-The non-original `Pocket-Dongle-S3-0.96` is under hardware bring-up. esptool detected an ESP32-S3, 16 MB flash and embedded 8 MB PSRAM; its full factory flash was backed up outside Git. A diagnostic showed readable text on the 160×80 display and confirmed BOOT on GPIO0. The experimental BLE bridge displayed connection states, enumerated as USB HID keyboard, mouse, and CDC COM22 on Windows, and the operator confirmed keyboard and mouse input from Flipper Bluetooth Remote. Repeated pairing/reset tests and microSD remain pending; see `docs/hardware/T_DONGLE_CLONE.md`.
+The non-original `Pocket-Dongle-S3-0.96` is a working USB HID target. esptool detected an ESP32-S3, 16 MB flash and embedded 8 MB PSRAM; its full factory flash was backed up outside Git. The operator confirmed Bluetooth Remote keyboard/mouse input, BadUSB operation and display scenes on the actual board. BOOT on GPIO0 and the 160×80 screen were also tested. Repeated pairing/reset tests and microSD remain pending; see `docs/hardware/T_DONGLE_CLONE.md`.
 
-A separate diagnostic passed a 64 KiB PSRAM write/read test. The board has no physical HID/DRIVE switch. The experimental Pocket build is selected at build time, leaving the Waveshare configuration intact.
+A separate diagnostic passed a 64 KiB PSRAM write/read test. The board has no physical HID/DRIVE switch. The Pocket build is selected at build time, leaving the Waveshare configuration intact.
 
 Development stack:
 - ESP-IDF 6.1
@@ -104,16 +104,16 @@ idf.py build
 idf.py flash
 ```
 
-Experimental Pocket-Dongle build, from the repository root:
+Pocket-Dongle build, from the repository root:
 
 ```powershell
 idf.py -B build-pocket -DPOCKET_DONGLE=ON build
 idf.py -B build-pocket -DPOCKET_DONGLE=ON -p COM23 flash
 ```
 
-The Pocket profile uses `sdkconfig.pocket.defaults` and an independent generated `sdkconfig.pocket` with the measured 16 MB flash size. The display shows BLE states such as `SCANNING`, `CONNECTING`, `CONNECTED`, and `NO HID`. After flashing, the debug CDC interface appeared as COM22 on the tested PC; COM numbering can change. Keyboard and mouse input worked in the first operator test. This remains an experimental build until repeated pairing/reset behavior is verified on hardware.
+The Pocket profile uses `sdkconfig.pocket.defaults` and an independent generated `sdkconfig.pocket` with the measured 16 MB flash size. After flashing, the debug CDC interface appeared as COM22 on the tested PC; COM numbering can change. The operator considers this HID target working. Pairing/reset stress tests, microSD and the PIN placard still need separate verification.
 
-The experimental Pocket screen now uses full-screen 160x80 RGB565 dolphin scenes based on the operator-approved references. It cycles three search frames, keeps the Flipper target fixed during that animation, shows a found scene, and switches to keyboard or mouse art after the corresponding USB HID report is queued. BadUSB uses its own art based on the connected BLE identity. An unrecognized HID report shows joystick/other-device art but is **not** forwarded as a USB joystick.
+The Pocket screen uses full-screen 160x80 RGB565 dolphin scenes based on the operator-approved references. It cycles three search frames, keeps the Flipper target fixed during that animation, shows a found scene, and switches to keyboard or mouse art after the corresponding USB HID report is queued. BadUSB uses its own art based on the connected BLE identity. An unrecognized HID report shows joystick/other-device art but is **not** forwarded as a USB joystick.
 
 For BLE display-passkey or numeric-comparison events, the six digits are drawn on the placard held by the dolphin. The image asset itself contains no fixed PIN. The current project-local NimBLE helper uses `123456` for its display-passkey action; numeric comparison uses the BLE event value. This UI change does not alter the pairing policy.
 

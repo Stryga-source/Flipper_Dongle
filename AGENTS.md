@@ -25,7 +25,9 @@ The PC should require no custom driver or companion application.
 
 ## Version baselines
 
-- `main` and `v0.5.5-first-test` = first hardware-tested baseline.
+- `v0.5.5-first-test` = preserved first hardware-tested baseline.
+- `main` = working HID core plus operator-tested Pocket-Dongle keyboard,
+  mouse, BadUSB and display scenes. Keep the original baseline available.
 - `v0.5.6-test-candidate` = pairing/reset race-fix candidate awaiting hardware verification.
 - Never rewrite or destructively modify the known-good baseline.
 - Make incremental, versioned changes.

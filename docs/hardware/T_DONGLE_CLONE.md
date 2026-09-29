@@ -1,6 +1,6 @@
 # Pocket-Dongle-S3-0.96 Hardware Notes
 
-Status: **MCU/memory identified; display SPI and BOOT GPIO0 verified; USB HID keyboard/mouse input confirmed by the operator; microSD remains unverified**
+Status: **working Pocket HID target: keyboard, mouse, BadUSB and display scenes confirmed by the operator; microSD remains unverified**
 
 2026-09-29 screen update: a 160x80 RGB565 scene pack based on the operator's
 approved montage was built for this board and flashed on COM23 with verified

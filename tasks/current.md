@@ -2,7 +2,7 @@
 
 ## Priority 0 — Preserve the working baseline
 
-Do not break `main` / `v0.5.5-first-test`.
+Keep `main` working and preserve `v0.5.5-first-test` as the first-test rollback point.
 
 The first working keyboard+mouse+BadKB bridge is already achieved.
 
@@ -10,7 +10,7 @@ Before experimental work, use a dedicated branch.
 
 ---
 
-## Priority 1 — Bring up Pocket-Dongle-S3-0.96 safely
+## Priority 1 — Finish Pocket-Dongle-S3-0.96 verification
 
 The new board has been visually identified from the actual PCB photos as `Pocket-Dongle-S3-0.96` with an ESP32-S3 MCU, integrated USB-A, 0.96-inch display, microSD socket, one tactile button, and exposed edge pads.
 
@@ -56,11 +56,9 @@ A matching public Pocket-Dongle-S3 project provides candidate pin assignments. T
 
 Progress: the separate diagnostic now renders `LCD TEST` on the actual display using the reference ST7735R 160x80 configuration and GPIO10–14. The operator confirmed readable text. The same diagnostic sampled GPIO0; pressing/releasing the physical BOOT button changed the on-screen message to `BOOT DOWN`/`RELEASED`. Those functions are now verified for this board. USB HID enumeration and input were subsequently verified; microSD is still pending.
 
-The experimental Pocket bridge has since built and flashed. Windows enumerated its USB HID keyboard and mouse plus CDC COM22; the operator reports that the display progressed from waiting to connected, and both keyboard and mouse input work on the PC. Repeated pairing/reset and microSD are still to verify. The baseline Waveshare build was rebuilt successfully after the Pocket changes.
+The Pocket bridge is working on the actual board. Windows enumerated USB HID keyboard, mouse and CDC COM22. The operator confirmed Bluetooth Remote keyboard/mouse input, BadUSB operation, and the full-screen scan/keyboard/mouse scenes. Pocket and Waveshare builds pass. The 2026-09-29 Pocket write hashes verified and the app started after a BOOT-free USB reconnect.
 
-UI follow-up: the user requested a dolphin holding a keyboard or mouse on the Pocket screen. A new build now draws a compact dolphin scene and selects the keyboard or mouse icon from the last successfully queued HID report. It redraws only when the report kind changes. Pocket and Waveshare builds pass. After the operator entered BOOT mode, the Pocket image was flashed with a verified write hash and the app re-enumerated as USB HID keyboard/mouse plus CDC COM22. Physical confirmation of both drawings is pending.
-
-New approved screen pack (2026-09-29): nine operator-approved scenes were adapted from the supplied montage to 160x80 RGB565 and integrated on `codex/pocket-screen-scenes`; a derived idle dolphin is the tenth frame. Pocket and Waveshare build. The Pocket image was written to COM23 with hash verification, then booted after a BOOT-free USB reconnect. The operator confirmed new pictures, scan animation, keyboard/mouse scene switching, and BadUSB operation; Windows exposed CDC COM22. The six-digit pairing placard and other-device scene still need separate confirmation. Joystick art is a visual marker for an unrecognized HID report; joystick USB forwarding is not implemented. During the BadUSB check, short BOOT landed during an automatic 5-second scan, so the explicit pairing scan began after that scan completed.
+Remaining Pocket checks: repeated pairing/reset behavior, the pairing-code placard, the other-device scene, microSD and any LED/status output. The joystick picture marks an unrecognized HID report; joystick USB forwarding is not implemented. During the BadUSB test, short BOOT landed during an automatic 5-second scan, so the explicit pairing scan started after that scan completed.
 
 ### Deliverables
 
@@ -150,17 +148,10 @@ Do not runtime-hot-switch USB descriptors unless deliberately redesigned and tes
 
 ## Priority 6 — UI
 
-After core behavior is reliable:
+Implemented for Pocket: idle, three-frame scan, Flipper found, keyboard,
+mouse and BadUSB art. Still to verify or design:
 
-- boot state
-- idle
-- scanning/pairing
-- HID found
-- connecting
-- connected
-- disconnected
-- pairing reset
-- DRIVE mode
-- error
-
-Add animations/status graphics only after board/display support is verified.
+- actual pairing code on the placard
+- other-device art on an unrecognized HID report
+- DRIVE mode after microSD verification
+- dedicated error art (current error text remains as a diagnostic fallback)

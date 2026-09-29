@@ -4,14 +4,18 @@ Last updated: 2026-09-29
 
 ## Overall
 
-The project has reached the first working BLE HID -> USB HID milestone.
+The BLE HID -> USB HID bridge is working on both Waveshare and Pocket-Dongle.
 
-Current known-good baseline:
+Preserved first-test baseline:
 
-- branch: `main`
 - preserved branch: `v0.5.5-first-test`
 - version: `v0.5.5`
 - status: **first hardware-tested test release**
+
+Current `main` adds the operator-tested Pocket-Dongle keyboard, mouse,
+BadUSB and display scenes. The original `v0.5.5-first-test` branch remains
+available for rollback. Pocket microSD/DRIVE and the pairing-code placard
+still need separate hardware validation.
 
 Current next candidate:
 
@@ -137,7 +141,7 @@ Identification results and remaining checks:
 - a separate ESP-IDF 6.1 diagnostic was built, flashed, and observed running on the Pocket-Dongle: 16,777,216 flash bytes reported and four consecutive 64 KiB PSRAM write/read PASS heartbeats; full 8 MB PSRAM integrity is untested
 - Windows enumerated `USB\\VID_303A&PID_1001&MI_00` on `COM23`; esptool reported USB-Serial/JTAG mode
 - experimental Pocket bridge with display built and flashed; Windows enumerated HID keyboard, HID mouse, and CDC COM22 (VID:PID 303A:4005). The operator confirmed that Flipper Bluetooth Remote connected and both keyboard and mouse input worked on the PC.
-- the Pocket display revision with a dolphin and keyboard/mouse icon was flashed after the operator entered ROM BOOT mode. The write hash verified, and the app restarted with HID keyboard, HID mouse, and CDC COM22 enumerated. Both Pocket and Waveshare compile; physical confirmation of the two drawings is pending.
+- an earlier small dolphin/icon revision was superseded by the full-screen scene pack described below
 - on `codex/pocket-screen-scenes`, the operator-approved nine reference pictures were adapted to 160x80 RGB565, with a tenth idle frame. The Pocket and Waveshare configurations both compile. Pocket flashing on COM23 verified all written hashes on 2026-09-29. After a BOOT-free USB reconnect, the operator confirmed the new pictures, all three scan frames, and keyboard/mouse scene switching; Windows exposed CDC COM22 (`303A:4005`).
 - Pocket UI also has BadUSB art by BLE identity, other-device art for unrecognized HID reports, and a BLE pairing-code placard. The other-device scene does not add joystick USB forwarding. The operator confirmed BadUSB works on this build: CDC logs show a `BadUSB` HID connection and USB keyboard reports queued. The pairing-code screen has not yet been tested by the operator.
 - A short BOOT press during an already-running automatic scan is serviced after that 5-second scan completes; this explains the initial apparent BadUSB delay in the 2026-09-29 test. No BLE core change was made for it.
@@ -147,7 +151,7 @@ Identification results and remaining checks:
 - the visible red component is consistent with a small RF antenna in the clearer photo; exact type/function is unverified, and no separate LED/status GPIO has been identified
 - the operator confirms no physical HID/DRIVE switch on this board; the older SPDT selector design is not applicable to this target
 
-The full 16 MB factory flash was backed up outside Git on 2026-09-28 using esptool `--no-stub`. The file size and SHA-256 were checked, and its first 1 MB matches an independent read. The experimental Pocket build uses a separate 16 MB sdkconfig; the original Waveshare build was rebuilt successfully. Preserve the factory backup for recovery.
+The full 16 MB factory flash was backed up outside Git on 2026-09-28 using esptool `--no-stub`. The file size and SHA-256 were checked, and its first 1 MB matches an independent read. The Pocket build uses a separate 16 MB sdkconfig; the Waveshare build was rebuilt successfully. Preserve the factory backup for recovery.
 
 ## Near-term order
 
@@ -158,4 +162,4 @@ The full 16 MB factory flash was backed up outside Git on 2026-09-28 using espto
 5. If v0.5.6 passes, promote pairing fix into the next baseline.
 6. Add Debug vs Release USB configurations.
 7. Merge HID/DRIVE + microSD MSC.
-8. Experimental Pocket status screen is present; refine after connection testing.
+8. Completed: Pocket scan/keyboard/mouse/BadUSB scenes tested on hardware. Remaining: pairing-code placard and other-device art.

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased — Pocket-Dongle bring-up
+- operator accepted the Pocket HID dongle as working; preserved `v0.5.5-first-test` as rollback, integrated the tested Pocket branch into `main`, and replaced an incomplete reference ZIP with the full approved montage
 - adapted the operator-approved dolphin montage into ten 160x80 RGB565 Pocket scenes (including derived idle art); three search frames keep the Flipper target stationary
 - connected keyboard, mouse, BadUSB, found, other-device and BLE pairing-code scenes to Pocket status events; unknown HID reports remain unforwarded, and the USB HID transport is unchanged
 - generated the pairing placard without fixed digits and draw the existing NimBLE display/numeric-comparison value at runtime

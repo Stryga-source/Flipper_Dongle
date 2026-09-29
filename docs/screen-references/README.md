@@ -2,8 +2,8 @@
 
 `approved_montage.png` is the operator-approved visual reference. It contains
 keyboard, joystick/other device, mouse, BadUSB, Flipper found, pairing PIN,
-and three scan poses. The earlier ZIP on `origin/main` was incomplete; this
-full montage is the source used by this branch.
+and three scan poses. An earlier ZIP upload was incomplete and remains only
+in Git history; this full montage is the source of the current screen pack.
 
 Run `python tools/generate_pocket_scenes.py` with Pillow installed to recreate
 `main/pocket_scenes.bin`. The binary contains ten 160x80 RGB565 big-endian
@@ -22,5 +22,6 @@ The joystick picture marks an unrecognized HID report. It does not mean the
 dongle forwards a joystick report to USB. This branch leaves the USB HID
 keyboard/mouse transport unchanged.
 
-The art was adapted from square references to the board's 160x80 LCD. Colors
-and legibility still need operator confirmation on the physical display.
+The art was adapted from square references to the board's 160x80 LCD. The
+operator confirmed the new scenes, search animation and keyboard/mouse display
+on the physical screen. The pairing placard still needs a hardware test.
