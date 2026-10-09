@@ -151,3 +151,15 @@ Pairing race-condition fix. Awaiting repeated verification before promotion.
 ## AI-assisted development
 
 The project is developed with the help of GPT, Codex and other AI tools. Project goals, product decisions and hardware validation come from a human; AI assists with code analysis, implementation, debugging and documentation.
+
+## A special thanks to AI
+
+Many people have wonderful ideas that may never become reality — not because those ideas lack value, but because their creators lack the knowledge, skills, or time to bring them to life.
+
+Artificial intelligence is changing that. AI helps bridge the gap between imagination and implementation, giving people the opportunity to create things they once could only dream about.
+
+This project is one example of that.
+
+Special thanks to OpenAI, GPT, Codex, and everyone working to make these technologies possible.
+
+**Sometimes, all a good idea needs is someone to help bring it to life.**
